@@ -77,11 +77,11 @@ class Trajectory():
     def connect_points(self, row):
         pt0 = row['prev_pt']
         pt1 = row['geometry']
-        if type(pt0)!=Point:
+        if type(pt0) != Point:
             return None
         if pt0 == pt1:
             # to avoid intersection issues with zero length lines
-            pt1 = translate(pt1,0.00000001,0.00000001)
+            pt1 = translate(pt1, 0.00000001, 0.00000001)
         return LineString(list(pt0.coords)+list(pt1.coords))
         
     def to_line_df(self):
@@ -103,7 +103,7 @@ class Trajectory():
             t0 = t + (t_delta * row['line'].project(pt0)/len)
             tn = t + (t_delta * row['line'].project(ptn)/len)
             # to avoid intersection issues with zero length lines
-            if ptn == translate(pt0,0.00000001,0.00000001):
+            if ptn == translate(pt0, 0.00000001, 0.00000001):
                 t0 = t
                 tn = row['t'] 
             return {'pt0':pt0,'ptn':ptn,'t0':t0,'tn':tn}
@@ -134,10 +134,10 @@ class Trajectory():
             t_ranges.append((x['t0'], x['tn']))
             # create row at entry point with attributes from previous row = pad 
             row0 = self.df.iloc[self.df.index.drop_duplicates().get_loc(x['t0'], method='pad')]
-            row0['geometry']=x['pt0']
+            row0['geometry'] = x['pt0']
             # create row at exit point
             rown = self.df.iloc[self.df.index.drop_duplicates().get_loc(x['tn'], method='pad')]
-            rown['geometry']=x['ptn']
+            rown['geometry'] = x['ptn']
             # insert rows
             self.df.loc[x['t0']] = row0
             self.df.loc[x['tn']] = rown

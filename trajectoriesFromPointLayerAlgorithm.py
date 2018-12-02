@@ -127,7 +127,7 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
             optional=False))
         self.addParameter(QgsProcessingParameterString(
             name=self.TIMESTAMP_FORMAT,
-            description=self.tr("Timestamp field"),
+            description=self.tr("Timestamp format"),
             defaultValue="%Y-%m-%d %H:%M:%S+00",
             optional=False))
         # output layer
