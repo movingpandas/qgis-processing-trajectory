@@ -1,0 +1,21 @@
+[general]
+name=Trajectory tools for Processing
+description=This is a collection of tools for handling trajectory data 
+about=TODO
+category=Plugins
+version=1.0
+qgisMinimumVersion=3.0
+qgisMaximumVersion=4.0
+
+icon=icons/icon.png
+tags=trajectories, movement
+
+author=Anita Graser
+email=anitagraser@gmx.at
+
+homepage=https://github.com/anitagraser/processing-trajectory
+tracker=https://github.com/anitagraser/processing-trajectory/issues
+repository=https://github.com/anitagraser/processing-trajectory
+
+experimental=True
+deprecated=False
