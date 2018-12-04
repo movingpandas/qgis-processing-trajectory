@@ -175,6 +175,55 @@ class TestTrajectory(unittest.TestCase):
         expected_result = []
         self.assertEqual(result, expected_result) 
 
+
+    def test_get_position_at_existing_timestamp(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.get_position_at(datetime(2018,1,1,12,10,0))      
+        expected_result = Point(6,0)
+        self.assertEqual(result, expected_result)
+
+
+    def test_get_position_of_nearest_timestamp(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.get_position_at(datetime(2018,1,1,12,14,0))      
+        expected_result = Point(6,0)
+        self.assertEqual(result, expected_result)
+        result = traj.get_position_at(datetime(2018,1,1,12,15,0))      
+        expected_result = Point(10,0)
+        self.assertEqual(result, expected_result)
+        
+        
+    def test_get_segment_between_existing_timestamps(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.get_segment_between(datetime(2018,1,1,12,10,0),datetime(2018,1,1,12,30,0))
+        data = [{'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)}]
+        expected_result = pd.DataFrame(data).set_index('t')
+        pd.testing.assert_frame_equal(result, expected_result)
+        data = [{'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}]
+        expected_result = pd.DataFrame(data).set_index('t')
+        self.assertNotEqual(result.to_dict(), expected_result.to_dict()) 
+            
  
 if __name__ == '__main__':
     unittest.main()
