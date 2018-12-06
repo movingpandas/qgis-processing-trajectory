@@ -25,8 +25,22 @@ __copyright__ = '(C) 2018, Anita Graser'
 
 __revision__ = '$Format:%H$'
 
-from .qgis_processing.trajectoryProviderPlugin import TrajectoryProviderPlugin
+import sys 
+
+sys.path.append("..")
+
+from qgis.core import QgsApplication
+
+from .trajectoryProvider import TrajectoryProvider
 
 
-def classFactory(iface):
-    return TrajectoryProviderPlugin()
+class TrajectoryProviderPlugin:
+
+    def __init__(self):
+        self.provider = TrajectoryProvider()
+
+    def initGui(self):
+        QgsApplication.processingRegistry().addProvider(self.provider)
+
+    def unload(self):
+        QgsApplication.processingRegistry().removeProvider(self.provider)

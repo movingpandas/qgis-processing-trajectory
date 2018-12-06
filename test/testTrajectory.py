@@ -32,6 +32,7 @@ from geopandas import GeoDataFrame
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
+from numpy import nan
 
 sys.path.append("..")
 
@@ -63,9 +64,8 @@ class TestTrajectory(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,5,0), datetime(2018,1,1,12,7,0)),
                            (datetime(2018,1,1,12,39,0), datetime(2018,1,1,12,45,0))]
         self.assertEqual(result, expected_result) 
-        
                 
-    def test_duplicate_traj_points(self):
+    def test_intersection_with_duplicate_traj_points(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
             {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
@@ -89,7 +89,6 @@ class TestTrajectory(unittest.TestCase):
             result.append((x.get_start_time(), x.get_end_time()))
         expected_result = [(datetime(2018,1,1,12,5,0), datetime(2018,1,1,12,8,0))]
         self.assertEqual(result, expected_result) 
-         
  
     def test_one_intersection(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
@@ -115,7 +114,6 @@ class TestTrajectory(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,5,0), datetime(2018,1,1,12,7,0))]
         self.assertEqual(result, expected_result) 
          
-     
     def test_one_intersection_reversed(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
         data = [{'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
@@ -140,8 +138,7 @@ class TestTrajectory(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,25,0), datetime(2018,1,1,12,35,0))]
         self.assertEqual(result, expected_result) 
          
-     
-    def test_milliseconds(self):
+    def test_intersection_with_milliseconds(self):
         polygon = Polygon([(5,-5), (7,-5), (8,5), (5,5), (5,-5)])
         data = [{'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
             {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)},
@@ -160,7 +157,6 @@ class TestTrajectory(unittest.TestCase):
         self.assertAlmostEqual(intersection.get_start_time(), datetime(2018,1,1,12,24,22,500000), delta=timedelta(milliseconds=1))
         self.assertEqual(intersection.get_end_time(), datetime(2018,1,1,12,35,0))
          
-         
     def test_no_intersection(self):
         polygon = Polygon([(105,-5), (107,-5), (107,12), (105,12), (105,-5)])
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -175,7 +171,6 @@ class TestTrajectory(unittest.TestCase):
         expected_result = []
         self.assertEqual(result, expected_result) 
 
-
     def test_get_position_at_existing_timestamp(self):
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
             {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
@@ -186,7 +181,6 @@ class TestTrajectory(unittest.TestCase):
         result = traj.get_position_at(datetime(2018,1,1,12,10,0))      
         expected_result = Point(6,0)
         self.assertEqual(result, expected_result)
-
 
     def test_get_position_of_nearest_timestamp(self):
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -201,7 +195,6 @@ class TestTrajectory(unittest.TestCase):
         result = traj.get_position_at(datetime(2018,1,1,12,15,0))      
         expected_result = Point(10,0)
         self.assertEqual(result, expected_result)
-        
         
     def test_get_segment_between_existing_timestamps(self):
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -223,7 +216,21 @@ class TestTrajectory(unittest.TestCase):
             {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}]
         expected_result = pd.DataFrame(data).set_index('t')
         self.assertNotEqual(result.to_dict(), expected_result.to_dict()) 
-            
+        
+    def test_add_heading(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'id':1, 'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
+            {'id':1, 'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        traj.add_heading()
+        result = traj.df['heading'].tolist() 
+        print(result)
+        expected_result = [0.0, 90.0, 180.0, 270]
+        self.assertEqual(result, expected_result)
+        
  
 if __name__ == '__main__':
     unittest.main()

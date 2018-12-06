@@ -4,7 +4,7 @@
 ***************************************************************************
     trajectoryProvider.py
     ---------------------
-    Date                 : January 2018
+    Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
     Email                : anitagraser@gmx.at
 ***************************************************************************
@@ -18,7 +18,7 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'January 2018'
+__date__ = 'December 2018'
 __copyright__ = '(C) 2018, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
@@ -26,6 +26,7 @@ __copyright__ = '(C) 2018, Anita Graser'
 __revision__ = '$Format:%H$'
 
 import os
+import sys 
 
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
@@ -34,8 +35,11 @@ from qgis.core import QgsProcessingProvider, QgsMessageLog
 
 from processing.core.ProcessingConfig import ProcessingConfig, Setting
 
+sys.path.append("..")
+
 from .trajectoriesFromPointLayerAlgorithm import TrajectoriesFromPointLayerAlgorithm
 from .clipTrajectoriesByExtentAlgorithm import ClipTrajectoriesByExtentAlgorithm
+from .addHeadingAlgorithm import AddHeadingAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -70,7 +74,8 @@ class TrajectoryProvider(QgsProcessingProvider):
 
     def getAlgs(self):
         algs = [TrajectoriesFromPointLayerAlgorithm(),
-                ClipTrajectoriesByExtentAlgorithm()]
+                ClipTrajectoriesByExtentAlgorithm(),
+                AddHeadingAlgorithm()]
         return algs
 
     def loadAlgorithms(self):

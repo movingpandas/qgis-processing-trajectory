@@ -2,9 +2,9 @@
 
 """
 ***************************************************************************
-    trajectoryUtils.py
+    qgisUtils.py
     ---------------------
-    Date                 : January 2018
+    Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
     Email                : anitagraser@gmx.at
 ***************************************************************************
@@ -18,12 +18,16 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'January 2018'
+__date__ = 'December 2018'
 __copyright__ = '(C) 2018, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
+
+import sys 
+
+sys.path.append("..")
 
 import pandas as pd 
 import numpy as np
@@ -32,7 +36,7 @@ from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
 
-from .trajectory import Trajectory
+from processing_trajectory.trajectory import Trajectory
 
 
 def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_field, time_format):

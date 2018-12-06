@@ -18,7 +18,7 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'Dec 2018'
+__date__ = 'December 2018'
 __copyright__ = '(C) 2018, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
@@ -26,14 +26,13 @@ __copyright__ = '(C) 2018, Anita Graser'
 __revision__ = '$Format:%H$'
 
 import os
-
+import sys 
 import pandas as pd 
 import numpy as np
 from geopandas import GeoDataFrame
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
-
 
 from qgis.PyQt.QtCore import QCoreApplication, QVariant
 from qgis.PyQt.QtGui import QIcon
@@ -55,13 +54,15 @@ from qgis.core import (QgsField,QgsFields,
                        QgsWkbTypes
                       )
 
-from .trajectory import Trajectory
-from .trajectoryUtils import trajectories_from_qgis_point_layer
+sys.path.append("..")
+
+from processing_trajectory.trajectory import Trajectory
+from .qgisUtils import trajectories_from_qgis_point_layer
 
 pluginPath = os.path.dirname(__file__)
 
 
-class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
+class AddHeadingAlgorithm(QgsProcessingAlgorithm):
     # script parameters
     INPUT = 'INPUT'
     TRAJ_ID_FIELD = 'OBJECT_ID_FIELD'
@@ -73,16 +74,16 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
         super().__init__()
 
     def name(self):
-        return "traj_from_point_layer"
+        return "add_heading"
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
 
     def tr(self, text):
-        return QCoreApplication.translate("clip_traj_extent", text)
+        return QCoreApplication.translate("add_heading", text)
 
     def displayName(self):
-        return self.tr("Trajectories from point layer")
+        return self.tr("Add heading to points")
 
     def group(self):
         return self.tr("Basic")
@@ -92,7 +93,7 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
 
     def shortHelpString(self):
         return self.tr("""
-            <h3>Trajectories from point layer</h3>
+            <h3>Add heading to points</h3>
             <p>Todo</p>
         """)
 
@@ -142,22 +143,31 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
         timestamp_field = self.parameterAsFields(parameters, self.TIMESTAMP_FIELD, context)[0]
         timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
         
-        output_fields = QgsFields()
-        output_fields.append(QgsField(traj_id_field, QVariant.String))
+        fields = input_layer.fields()
+        output_fields = fields
+        output_fields.append(QgsField('heading', QVariant.Double))
         
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                output_fields, 
-                                               QgsWkbTypes.LineString, 
+                                               QgsWkbTypes.Point, 
                                                input_layer.sourceCrs())
         
         trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
         
         for traj in trajectories:
-            line = QgsGeometry.fromWkt(traj.to_linestring().wkt)
-            f = QgsFeature()
-            f.setGeometry(line)
-            f.setAttributes([traj.id])
-            sink.addFeature(f, QgsFeatureSink.FastInsert)
+            traj.add_heading()
+            for index, row in traj.df.iterrows():
+                pt = QgsGeometry.fromWkt(row['geometry'].wkt)
+                f = QgsFeature()
+                f.setGeometry(pt)
+                attributes = []
+                for field in fields:
+                    if field.name() == timestamp_field:
+                        attributes.append(str(index))
+                    else:
+                        attributes.append(row[field.name()])
+                f.setAttributes(attributes)
+                sink.addFeature(f, QgsFeatureSink.FastInsert)
         
         # default return type for function
         return {self.OUTPUT: dest_id}

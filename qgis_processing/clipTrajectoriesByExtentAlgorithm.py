@@ -26,6 +26,9 @@ __copyright__ = '(C) 2018, Anita Graser'
 __revision__ = '$Format:%H$'
 
 import os
+import sys 
+
+sys.path.append("..")
 
 import pandas as pd 
 import numpy as np
@@ -55,8 +58,8 @@ from qgis.core import (QgsField,QgsFields,
                        QgsWkbTypes
                       )
 
-from .trajectory import Trajectory
-from .trajectoryUtils import trajectories_from_qgis_point_layer
+from processing_trajectory.trajectory import Trajectory
+from .qgisUtils import trajectories_from_qgis_point_layer
 
 pluginPath = os.path.dirname(__file__)
 

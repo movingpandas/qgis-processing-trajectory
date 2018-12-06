@@ -4,7 +4,7 @@
 ***************************************************************************
     trajectory.py
     ---------------------
-    Date                 : January 2018
+    Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
     Email                : anitagraser@gmx.at
 ***************************************************************************
@@ -18,19 +18,25 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'January 2018'
+__date__ = 'December 2018'
 __copyright__ = '(C) 2018, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
 
+import os
+import sys
 import pandas as pd 
 import numpy as np
 from geopandas import GeoDataFrame
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
+
+sys.path.append(os.path.dirname(__file__))
+
+from geometryUtils import azimuth
 
 class Trajectory():
     def __init__(self, id, df):
@@ -66,6 +72,19 @@ class Trajectory():
         
     def get_segment_between(self, t1, t2):
         return self.df[t1:t2]
+    
+    def compute_heading(self, row):
+        pt0 = row['prev_pt']
+        pt1 = row['geometry']
+        if type(pt0) != Point:
+            return 0.0
+        if pt0 == pt1:
+            return 0.0
+        return azimuth(pt0, pt1)
+    
+    def add_heading(self):
+        self.df['prev_pt'] = self.df['geometry'].shift()
+        self.df['heading'] = self.df.apply(self.compute_heading, axis=1)
         
     def make_line(self, df):
         if df.size > 1:
@@ -82,7 +101,7 @@ class Trajectory():
         if pt0 == pt1:
             # to avoid intersection issues with zero length lines
             pt1 = translate(pt1, 0.00000001, 0.00000001)
-        return LineString(list(pt0.coords)+list(pt1.coords))
+        return LineString(list(pt0.coords) + list(pt1.coords))
         
     def to_line_df(self):
         line_df = self.df.copy()
@@ -94,7 +113,7 @@ class Trajectory():
     
     def get_spatiotemporal_ref(self, row):
         #print(type(row['geo_intersection']))
-        if type(row['geo_intersection'])==LineString:
+        if type(row['geo_intersection']) == LineString:
             pt0 = Point(row['geo_intersection'].coords[0])
             ptn = Point(row['geo_intersection'].coords[-1])
             t = row['prev_t']
@@ -106,7 +125,7 @@ class Trajectory():
             if ptn == translate(pt0, 0.00000001, 0.00000001):
                 t0 = t
                 tn = row['t'] 
-            return {'pt0':pt0,'ptn':ptn,'t0':t0,'tn':tn}
+            return {'pt0':pt0, 'ptn':ptn, 't0':t0, 'tn':tn}
         else:
             return None
             

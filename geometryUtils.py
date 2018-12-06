@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    trajectoryProviderPlugin.py
+    geometryUtils.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
@@ -18,25 +18,23 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'Dec 2018'
+__date__ = 'December 2018'
 __copyright__ = '(C) 2018, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
 
 __revision__ = '$Format:%H$'
 
-from qgis.core import QgsApplication
 
-from .trajectoryProvider import TrajectoryProvider
+import math 
+from shapely.geometry import Point
 
 
-class TrajectoryProviderPlugin:
+def azimuth(point1, point2):
+    angle = math.atan2(point2.x - point1.x, point2.y - point1.y) 
+    azimuth = math.degrees(angle)    
+    if angle < 0:
+        azimuth += 360
+    #print("{}->{}: angle={} azimuth={}".format(point1, point2, angle, azimuth))
+    return azimuth
 
-    def __init__(self):
-        self.provider = TrajectoryProvider()
-
-    def initGui(self):
-        QgsApplication.processingRegistry().addProvider(self.provider)
-
-    def unload(self):
-        QgsApplication.processingRegistry().removeProvider(self.provider)
