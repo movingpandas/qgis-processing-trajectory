@@ -38,6 +38,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from geometryUtils import azimuth
 
+
 class Trajectory():
     def __init__(self, id, df):
         self.id = id

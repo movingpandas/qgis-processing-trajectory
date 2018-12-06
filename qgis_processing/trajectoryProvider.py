@@ -30,9 +30,7 @@ import sys
 
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
-
 from qgis.core import QgsProcessingProvider, QgsMessageLog
-
 from processing.core.ProcessingConfig import ProcessingConfig, Setting
 
 sys.path.append("..")

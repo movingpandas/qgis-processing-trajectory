@@ -27,9 +27,9 @@ __revision__ = '$Format:%H$'
 
 import sys 
 
-sys.path.append("..")
-
 from qgis.core import QgsApplication
+
+sys.path.append("..")
 
 from .trajectoryProvider import TrajectoryProvider
 

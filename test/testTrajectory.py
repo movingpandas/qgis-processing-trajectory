@@ -37,6 +37,7 @@ from numpy import nan
 sys.path.append("..")
 
 from trajectory import Trajectory 
+
  
 class TestTrajectory(unittest.TestCase):
  

@@ -32,6 +32,7 @@ sys.path.append("..")
 
 from trajectory import Trajectory 
 from geometryUtils import azimuth
+
  
 class TestGeometryUtils(unittest.TestCase):
  

@@ -26,15 +26,14 @@ __copyright__ = '(C) 2018, Anita Graser'
 __revision__ = '$Format:%H$'
 
 import sys 
-
-sys.path.append("..")
-
 import pandas as pd 
 import numpy as np
 from geopandas import GeoDataFrame
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
+
+sys.path.append("..")
 
 from processing_trajectory.trajectory import Trajectory
 
