@@ -36,7 +36,7 @@ from datetime import datetime, timedelta
 
 sys.path.append(os.path.dirname(__file__))
 
-from geometryUtils import azimuth
+from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance
 
 
 class Trajectory():
@@ -52,6 +52,12 @@ class Trajectory():
     def to_linestring(self):
         return self.make_line(self.df)
         
+    def get_start_location(self):
+        return self.df.head(1).geometry[0]
+    
+    def get_end_location(self):
+        return self.df.tail(1).geometry[0]
+        
     def get_start_time(self):
         return self.df.index.min()
         
@@ -60,10 +66,10 @@ class Trajectory():
         
     def get_position_at(self, t):
         try:
-            return self.df.loc[t]['geometry'][0]
+            return self.df.loc[t].geometry[0]
         except:
             #return self.df.iloc[self.df.index.get_loc(t, method='nearest')]['geometry']
-            return self.df.iloc[self.df.index.drop_duplicates().get_loc(t, method='nearest')]['geometry']        
+            return self.df.iloc[self.df.index.drop_duplicates().get_loc(t, method='nearest')].geometry       
         
     def get_linestring_between(self, t1, t2):
         try:
@@ -74,7 +80,7 @@ class Trajectory():
     def get_segment_between(self, t1, t2):
         return self.df[t1:t2]
     
-    def compute_heading(self, row):
+    def compute_azimuth(self, row):
         pt0 = row['prev_pt']
         pt1 = row['geometry']
         if type(pt0) != Point:
@@ -82,14 +88,44 @@ class Trajectory():
         if pt0 == pt1:
             return 0.0
         return azimuth(pt0, pt1)
-    
-    def add_heading(self):
-        self.df['prev_pt'] = self.df['geometry'].shift()
-        self.df['heading'] = self.df.apply(self.compute_heading, axis=1)
+        
+    def compute_bearing(self, row):
+        pt0 = row['prev_pt']
+        pt1 = row['geometry']
+        if type(pt0) != Point:
+            return 0.0
+        if pt0 == pt1:
+            return 0.0
+        return calculate_initial_compass_bearing(pt0, pt1)
+        
+    def compute_speed(self, row):
+        pt0 = row['prev_pt']
+        pt1 = row['geometry']
+        if type(pt0) != Point:
+            return 0.0
+        if pt0 == pt1:
+            return 0.0
+        dist_meters = measure_distance(pt0, pt1)
+        return dist_meters / row['delta_t'].total_seconds()
+        
+    def add_heading(self, mode = 'euclidean'):
+        self.df['prev_pt'] = self.df.geometry.shift()
+        modes = {'euclidean': self.compute_azimuth,
+                 'spherical': self.compute_bearing}
+        self.df['heading'] = self.df.apply(modes[mode], axis=1)
+        self.df.at[self.get_start_time(),'heading'] = self.df.iloc[1]['heading']
+        
+    def add_speed(self, mode = 'euclidean'):
+        self.df['prev_pt'] = self.df.geometry.shift()
+        self.df['t'] = self.df.index
+        self.df['prev_t'] = self.df['t'].shift()
+        self.df['delta_t'] = self.df['t'] - self.df['prev_t'] 
+        self.df['meters_per_sec'] = self.df.apply(self.compute_speed, axis=1)
+        self.df.at[self.get_start_time(),'meters_per_sec'] = self.df.iloc[1]['meters_per_sec']
         
     def make_line(self, df):
         if df.size > 1:
-            return df.groupby([True]*len(df))['geometry'].apply(
+            return df.groupby([True]*len(df)).geometry.apply(
                 lambda x: LineString(x.tolist())).values[0]
         else:
             raise RuntimeError('Dataframe needs at least two points to make line!') 

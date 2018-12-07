@@ -22,6 +22,10 @@ call C:\OSGeo4W64\bin\py3_env.bat
 
 python3 testTrajectory.py -v
 
+or if you want to run all tests at once:
+
+python3 -m unittest discover . -v
+
 """
 
 import sys 
@@ -228,8 +232,8 @@ class TestTrajectory(unittest.TestCase):
         traj = Trajectory(1,geo_df)
         traj.add_heading()
         result = traj.df['heading'].tolist() 
-        print(result)
-        expected_result = [0.0, 90.0, 180.0, 270]
+        #print(result)
+        expected_result = [90.0, 90.0, 180.0, 270]
         self.assertEqual(result, expected_result)
         
  

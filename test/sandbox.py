@@ -39,22 +39,38 @@ pluginPath = os.path.dirname(__file__)
 sys.path.append(os.path.join(pluginPath,".."))
 
 from trajectory import Trajectory 
- 
+from trajectoryPredictor import TrajectoryPredictor
+
+
 data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-    {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-    {'id':1, 'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
-    {'id':1, 'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}]
+    {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,1,0)},
+    {'id':1, 'geometry':Point(30,0), 't':datetime(2018,1,1,12,2,0)}]    
 df = pd.DataFrame(data).set_index('t')
 geo_df = GeoDataFrame(df, crs={'init': '31256'})
 traj = Trajectory(1,geo_df)
-traj.add_heading()
 
-for index, row in df.iterrows():
-    print(index)
-    print(row['geometry'].wkt)
-    print(row)
+#traj.add_heading('spherical') 
+#traj.add_speed()
+#
+#print(traj.df)
+#
+#for index, row in traj.df.iterrows():
+#    print(index)
+#    print(row['geometry'].wkt)
+
+
+
+predictor = TrajectoryPredictor(traj)
+result = predictor.predict_kinetically(timedelta(minutes=1))
+print(result)
+
+
+#result = predictor.predict_kinetically(timedelta(minutes=2))
+#print(result)
+#result = predictor.predict_kinetically(timedelta(minutes=3))
+#print(result)
     
 
+print(predictor.traj.df)
 
-
- 
+#print(predictor.traj.df.tail(1).copy())
