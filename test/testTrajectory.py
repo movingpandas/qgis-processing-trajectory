@@ -232,9 +232,41 @@ class TestTrajectory(unittest.TestCase):
         traj = Trajectory(1,geo_df)
         traj.add_heading()
         result = traj.df['heading'].tolist() 
-        #print(result)
         expected_result = [90.0, 90.0, 180.0, 270]
         self.assertEqual(result, expected_result)
+        
+    def test_add_heading_latlon(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '4326'})
+        traj = Trajectory(1,geo_df)
+        traj.add_heading()
+        result = traj.df['heading'].tolist()
+        expected_result = [44.561451413257714, 44.561451413257714]
+        self.assertAlmostEqual(result[0], expected_result[0], 5)
+        
+    def test_add_meters_per_sec(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        traj.add_meters_per_sec()
+        result = traj.df['meters_per_sec'].tolist() 
+        expected_result = [6.0, 6.0]
+        self.assertEqual(result, expected_result)
+        
+    def test_add_meters_per_sec_latlon(self):
+        data = [{'id':1, 'geometry':Point(0,1), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '4326'})
+        traj = Trajectory(1,geo_df)
+        traj.add_meters_per_sec()
+        result = traj.df['meters_per_sec'].tolist()[0]/1000
+        expected_result = 676.3
+        self.assertAlmostEqual(result, expected_result, 1)
         
  
 if __name__ == '__main__':

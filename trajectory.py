@@ -36,13 +36,14 @@ from datetime import datetime, timedelta
 
 sys.path.append(os.path.dirname(__file__))
 
-from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance
+from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
 
 
 class Trajectory():
     def __init__(self, id, df):
         self.id = id
         self.df = df
+        self.crs = df.crs['init']
         
     def __str__(self):
         return "Trajectory {1} ({2} to {3}) | Size: {0}\n{4}".format(
@@ -79,24 +80,18 @@ class Trajectory():
         
     def get_segment_between(self, t1, t2):
         return self.df[t1:t2]
-    
-    def compute_azimuth(self, row):
+
+    def compute_heading(self, row):
         pt0 = row['prev_pt']
         pt1 = row['geometry']
         if type(pt0) != Point:
             return 0.0
         if pt0 == pt1:
             return 0.0
-        return azimuth(pt0, pt1)
-        
-    def compute_bearing(self, row):
-        pt0 = row['prev_pt']
-        pt1 = row['geometry']
-        if type(pt0) != Point:
-            return 0.0
-        if pt0 == pt1:
-            return 0.0
-        return calculate_initial_compass_bearing(pt0, pt1)
+        if self.crs == '4326':
+            return calculate_initial_compass_bearing(pt0, pt1)            
+        else:
+            return azimuth(pt0, pt1)
         
     def compute_speed(self, row):
         pt0 = row['prev_pt']
@@ -105,17 +100,18 @@ class Trajectory():
             return 0.0
         if pt0 == pt1:
             return 0.0
-        dist_meters = measure_distance(pt0, pt1)
-        return dist_meters / row['delta_t'].total_seconds()
-        
-    def add_heading(self, mode = 'euclidean'):
+        if self.crs == '4326':
+            dist_meters = measure_distance_spherical(pt0, pt1)
+        else: # The following distance will be in CRS units that might not be meters!
+            dist_meters = measure_distance_euclidean(pt0, pt1)
+        return dist_meters / row['delta_t'].total_seconds()  
+            
+    def add_heading(self):
         self.df['prev_pt'] = self.df.geometry.shift()
-        modes = {'euclidean': self.compute_azimuth,
-                 'spherical': self.compute_bearing}
-        self.df['heading'] = self.df.apply(modes[mode], axis=1)
+        self.df['heading'] = self.df.apply(self.compute_heading, axis=1)
         self.df.at[self.get_start_time(),'heading'] = self.df.iloc[1]['heading']
         
-    def add_speed(self, mode = 'euclidean'):
+    def add_meters_per_sec(self):
         self.df['prev_pt'] = self.df.geometry.shift()
         self.df['t'] = self.df.index
         self.df['prev_t'] = self.df['t'].shift()

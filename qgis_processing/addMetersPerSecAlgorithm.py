@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    addHeadingAlgorithm.py
+    addMetersPerSecAlgorithm.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
@@ -62,7 +62,7 @@ from .qgisUtils import trajectories_from_qgis_point_layer
 pluginPath = os.path.dirname(__file__)
 
 
-class AddHeadingAlgorithm(QgsProcessingAlgorithm):
+class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
     # script parameters
     INPUT = 'INPUT'
     TRAJ_ID_FIELD = 'OBJECT_ID_FIELD'
@@ -74,16 +74,16 @@ class AddHeadingAlgorithm(QgsProcessingAlgorithm):
         super().__init__()
 
     def name(self):
-        return "add_heading"
+        return "add_meters_per_sec"
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
 
     def tr(self, text):
-        return QCoreApplication.translate("add_heading", text)
+        return QCoreApplication.translate("add_meters_per_sec", text)
 
     def displayName(self):
-        return self.tr("Add heading to points")
+        return self.tr("Add meters per second to points")
 
     def group(self):
         return self.tr("Basic")
@@ -93,7 +93,7 @@ class AddHeadingAlgorithm(QgsProcessingAlgorithm):
 
     def shortHelpString(self):
         return self.tr("""
-            <h3>Add heading to points</h3>
+            <h3>Add speed (in meters per second) to points</h3>
             <p>Todo</p>
         """)
 
@@ -145,7 +145,7 @@ class AddHeadingAlgorithm(QgsProcessingAlgorithm):
         
         fields = input_layer.fields()
         output_fields = fields
-        output_fields.append(QgsField('heading', QVariant.Double))
+        output_fields.append(QgsField('meters_per_sec', QVariant.Double))
         
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                output_fields, 
@@ -155,7 +155,7 @@ class AddHeadingAlgorithm(QgsProcessingAlgorithm):
         trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
         
         for traj in trajectories:
-            traj.add_heading()
+            traj.add_meters_per_sec()
             for index, row in traj.df.iterrows():
                 pt = QgsGeometry.fromWkt(row['geometry'].wkt)
                 f = QgsFeature()

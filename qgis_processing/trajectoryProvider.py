@@ -38,6 +38,7 @@ sys.path.append("..")
 from .trajectoriesFromPointLayerAlgorithm import TrajectoriesFromPointLayerAlgorithm
 from .clipTrajectoriesByExtentAlgorithm import ClipTrajectoriesByExtentAlgorithm
 from .addHeadingAlgorithm import AddHeadingAlgorithm
+from .addMetersPerSecAlgorithm import AddMetersPerSecAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -73,7 +74,8 @@ class TrajectoryProvider(QgsProcessingProvider):
     def getAlgs(self):
         algs = [TrajectoriesFromPointLayerAlgorithm(),
                 ClipTrajectoriesByExtentAlgorithm(),
-                AddHeadingAlgorithm()]
+                AddHeadingAlgorithm(),
+                AddMetersPerSecAlgorithm()]
         return algs
 
     def loadAlgorithms(self):

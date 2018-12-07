@@ -33,7 +33,7 @@ from shapely.geometry import Point
 
 R_EARTH = 6371000  # radius of earth in meters
 
-def measure_distance(point1, point2):
+def measure_distance_spherical(point1, point2):
     if (type(point1) != Point) or (type(point2) != Point):
         raise TypeError("Only Points are supported as arguments")
     lon1 = float(point1.x)
@@ -46,6 +46,11 @@ def measure_distance(point1, point2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
     dist = R_EARTH * c
     return dist
+
+def measure_distance_euclidean(point1, point2):
+    if (type(point1) != Point) or (type(point2) != Point):
+        raise TypeError("Only Points are supported as arguments")
+    return point1.distance(point2)
  
 def calculate_initial_compass_bearing(point1, point2):
     """
