@@ -93,11 +93,10 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
         return "TrajectoryBasic"
 
     def shortHelpString(self):
-        return self.tr("""
-            <h3>Trajectories from point layer</h3>
-            <p>Creates a LinestringM layer from points grouped by trajectory ID field
-            and ordered by time.</p>
-        """)
+        return self.tr(
+            "<p>Creates a LineStringM layer from points grouped by trajectory ID field, " + 
+            "ordered by time.</p><p>Temporal information " + 
+            "is stored as unixtime in the m value.</p>")
 
     def helpUrl(self):
         return "https://github.com/anitagraser/processing-trajectory"

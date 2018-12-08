@@ -95,10 +95,10 @@ class ClipTrajectoriesByExtentAlgorithm(QgsProcessingAlgorithm):
         return "TrajectoryBasic"
 
     def shortHelpString(self):
-        return self.tr("""
-            <h3>Trajectories from point layer</h3>
-            <p>Todo</p>
-        """)
+        return self.tr(
+            "<p>Creates a LineStringM layer from points grouped by trajectory ID field, " + 
+            "ordered by time, and clipped by the provided extent.</p><p>Temporal information " + 
+            "is stored as unixtime in the m value.</p>")
 
     def helpUrl(self):
         return "https://github.com/anitagraser/processing-trajectory"

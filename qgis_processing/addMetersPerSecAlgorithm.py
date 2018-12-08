@@ -92,13 +92,10 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
         return "TrajectoryBasic"
 
     def shortHelpString(self):
-        return self.tr("""
-            <h3>Add speed (in meters per second) to points</h3>
-            <p>If the input layer CRS is EPSG:4326, distances are computed using spherical 
-            equations. If the layer CRS unit miles, the resulting speed values will be 
-            miles per second but the attribute name is currently hard-coded to meters_per_sec.
-            </p>
-        """)
+        return self.tr(
+            "<p>If the input layer CRS is EPSG:4326, distances are computed using spherical " + 
+            "equations. If the layer CRS unit miles, the resulting speed values will be " + 
+            "miles per second but the attribute name is currently hard-coded to meters_per_sec.</p>")
 
     def helpUrl(self):
         return "https://github.com/anitagraser/processing-trajectory"

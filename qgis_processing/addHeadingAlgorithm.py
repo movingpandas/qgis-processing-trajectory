@@ -92,10 +92,8 @@ class AddHeadingAlgorithm(QgsProcessingAlgorithm):
         return "TrajectoryBasic"
 
     def shortHelpString(self):
-        return self.tr("""
-            <h3>Add heading to points</h3>
-            <p>Todo</p>
-        """)
+        return self.tr(
+            "<p>Todo</p>")
 
     def helpUrl(self):
         return "https://github.com/anitagraser/processing-trajectory"
