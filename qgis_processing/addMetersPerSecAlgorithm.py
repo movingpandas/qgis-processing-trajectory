@@ -83,7 +83,7 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
         return QCoreApplication.translate("add_meters_per_sec", text)
 
     def displayName(self):
-        return self.tr("Add meters per second to points")
+        return self.tr("Add speed (m/s) to points")
 
     def group(self):
         return self.tr("Basic")
@@ -94,7 +94,10 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
     def shortHelpString(self):
         return self.tr("""
             <h3>Add speed (in meters per second) to points</h3>
-            <p>Todo</p>
+            <p>If the input layer CRS is EPSG:4326, distances are computed using spherical 
+            equations. If the layer CRS unit miles, the resulting speed values will be 
+            miles per second but the attribute name is currently hard-coded to meters_per_sec.
+            </p>
         """)
 
     def helpUrl(self):

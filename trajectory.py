@@ -39,6 +39,13 @@ sys.path.append(os.path.dirname(__file__))
 from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
 
 
+def to_unixtime(t):
+    return (t - datetime(1970,1,1,0,0,0)).total_seconds() 
+
+def is_equal(t1, t2):
+    return abs(t1 - t2) < timedelta(milliseconds=10)
+
+
 class Trajectory():
     def __init__(self, id, df):
         self.id = id
@@ -52,6 +59,16 @@ class Trajectory():
         
     def to_linestring(self):
         return self.make_line(self.df)
+    
+    def to_linestringm_wkt(self):
+        # Shapely only supports x, y, z. Therfore, this is a bit hacky!
+        coords = ''
+        for index, row in self.df.iterrows():
+            pt = row.geometry
+            t = to_unixtime(index)
+            coords += "{} {} {}, ".format(pt.x, pt.y, t)  
+        wkt = "LINESTRING M ({})".format(coords[:-2])
+        return wkt
         
     def get_start_location(self):
         return self.df.head(1).geometry[0]
@@ -60,10 +77,10 @@ class Trajectory():
         return self.df.tail(1).geometry[0]
         
     def get_start_time(self):
-        return self.df.index.min()
+        return self.df.index.min().to_pydatetime()
         
     def get_end_time(self):
-        return self.df.index.max()
+        return self.df.index.max().to_pydatetime()
         
     def get_position_at(self, t):
         try:
@@ -156,8 +173,13 @@ class Trajectory():
             tn = t + (t_delta * row['line'].project(ptn)/len)
             # to avoid intersection issues with zero length lines
             if ptn == translate(pt0, 0.00000001, 0.00000001):
-                t0 = t
-                tn = row['t'] 
+                t0 = row['prev_t']
+                tn = row['t']
+            # to avoid numerical issues with timestamps
+            if is_equal(tn, row['t']):
+                tn = row['t']
+            if is_equal(t0, row['prev_t']):
+                t0 = row['prev_t']
             return {'pt0':pt0, 'ptn':ptn, 't0':t0, 'tn':tn}
         else:
             return None
@@ -212,7 +234,7 @@ class Trajectory():
                 end = t_range[1]
             elif end == t_range[0]:
                 end = t_range[1]
-            elif t_range[0] > end and t_range[0] - end < timedelta(milliseconds=10):
+            elif t_range[0] > end and is_equal(t_range[0], end):
                 end = t_range[1]
             else:
                 new.append((start, end))

@@ -30,7 +30,6 @@ from math import sin, cos, atan2, radians, degrees, asin, sqrt, ceil, log, tan, 
 from shapely.geometry import Point
 
 
-
 R_EARTH = 6371000  # radius of earth in meters
 
 def measure_distance_spherical(point1, point2):
@@ -96,3 +95,14 @@ def azimuth(point1, point2):
     #print("{}->{}: angle={} azimuth={}".format(point1, point2, angle, azimuth))
     return azimuth
 
+def angular_difference(degrees1, degrees2):
+    """
+    Calculates the smaller angle between the provided bearings / headings
+    """
+    diff = abs(degrees1 - degrees2)
+    if diff > 180:
+        diff = abs(diff - 360)
+    return diff 
+    
+    
+    

@@ -35,7 +35,7 @@ from shapely.geometry import Point
 sys.path.append("..")
 
 from trajectory import Trajectory 
-from geometryUtils import azimuth, calculate_initial_compass_bearing
+from geometryUtils import azimuth, calculate_initial_compass_bearing, angular_difference
 
  
 class TestGeometryUtils(unittest.TestCase):
@@ -104,6 +104,35 @@ class TestGeometryUtils(unittest.TestCase):
         expected_result = 315
         self.assertEqual(result, expected_result) 
         
+    def test_anglular_difference_tohigher(self):
+        result = angular_difference(1, 5)
+        expected_result = 4
+        self.assertEqual(result, expected_result) 
+        
+    def test_anglular_difference_tolower(self):
+        result = angular_difference(355, 5)
+        expected_result = 10
+        self.assertEqual(result, expected_result) 
+        
+    def test_anglular_difference_halfcicle(self):
+        result = angular_difference(180, 0)
+        expected_result = 180
+        self.assertEqual(result, expected_result) 
+        
+    def test_anglular_difference_same(self):
+        result = angular_difference(45, 45)
+        expected_result = 0
+        self.assertEqual(result, expected_result) 
+        
+    def test_anglular_difference_onenegative(self):
+        result = angular_difference(-45, 45)
+        expected_result = 90
+        self.assertEqual(result, expected_result) 
+        
+    def test_anglular_difference_twonegative(self):
+        result = angular_difference(-200, -160)
+        expected_result = 40
+        self.assertEqual(result, expected_result) 
         
 if __name__ == '__main__':
     unittest.main()

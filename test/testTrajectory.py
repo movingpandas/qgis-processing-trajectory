@@ -45,6 +45,28 @@ from trajectory import Trajectory
  
 class TestTrajectory(unittest.TestCase):
  
+    def test_linestring_wkt(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.to_linestring().wkt
+        expected_result = "LINESTRING (0 0, 6 0, 10 0)"        
+        self.assertEqual(result, expected_result) 
+        
+    def test_linstring_m_wkt(self):
+        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(1970,1,1,0,0,1)},
+            {'id':1, 'geometry':Point(6,0), 't':datetime(1970,1,1,0,0,2)},
+            {'id':1, 'geometry':Point(10,0), 't':datetime(1970,1,1,0,0,3)}]
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.to_linestringm_wkt()
+        expected_result = "LINESTRING M (0.0 0.0 1.0, 6.0 0.0 2.0, 10.0 0.0 3.0)"        
+        self.assertEqual(result, expected_result) 
+         
     def test_two_intersections_with_same_polygon(self):
         polygon = Polygon([(5,-5), (7,-5), (7,12), (5,12), (5,-5)])
         data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -161,6 +183,20 @@ class TestTrajectory(unittest.TestCase):
         # temporal
         self.assertAlmostEqual(intersection.get_start_time(), datetime(2018,1,1,12,24,22,500000), delta=timedelta(milliseconds=1))
         self.assertEqual(intersection.get_end_time(), datetime(2018,1,1,12,35,0))
+         
+    def test_intersection_with_numerical_time_issues(self):     
+        xmin, xmax, ymin, ymax = 116.36850352835575,116.37029459899574,39.904675309969896,39.90772814977718 
+        polygon = Polygon([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin), (xmin, ymin)])
+        data = [{'id':1, 'geometry':Point(116.36855, 39.904926), 't':datetime(2009,3,10,11,3,35)},
+            {'id':1, 'geometry':Point(116.368612, 39.904877), 't':datetime(2009,3,10,11,3,37)},
+            {'id':1, 'geometry':Point(116.368644, 39.90484), 't':datetime(2009,3,10,11,3,39)}]        
+        df = pd.DataFrame(data).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        intersection = traj.intersection(polygon)[0]
+        result = intersection.to_linestring().wkt
+        expected_result = "LINESTRING (116.36855 39.904926, 116.368612 39.904877, 116.368644 39.90484)"
+        self.assertEqual(result, expected_result)         
          
     def test_no_intersection(self):
         polygon = Polygon([(105,-5), (107,-5), (107,12), (105,12), (105,-5)])

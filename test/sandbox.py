@@ -35,11 +35,12 @@ from shapely.affinity import translate
 from datetime import datetime, timedelta
 from numpy import nan
 
+
 pluginPath = os.path.dirname(__file__)
 sys.path.append(os.path.join(pluginPath,".."))
 
 from trajectory import Trajectory 
-from trajectoryPredictor import TrajectoryPredictor
+#from trajectoryPredictor import TrajectoryPredictor
 
 
 data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -58,19 +59,23 @@ traj = Trajectory(1,geo_df)
 #    print(index)
 #    print(row['geometry'].wkt)
 
-
-
-predictor = TrajectoryPredictor(traj)
-result = predictor.predict_kinetically(timedelta(minutes=1))
-print(result)
-
+#predictor = TrajectoryPredictor(traj)
+#result = predictor.predict_kinetically(timedelta(minutes=1))
+#print(result)
 
 #result = predictor.predict_kinetically(timedelta(minutes=2))
 #print(result)
 #result = predictor.predict_kinetically(timedelta(minutes=3))
 #print(result)
     
-
-print(predictor.traj.df)
+#print(predictor.traj.df)
 
 #print(predictor.traj.df.tail(1).copy())
+
+
+
+l = LineString([Point(0.0, 1.0, 0), (2.0, 3.0, 1), Point(4.0, 5.0, 4)])
+print(l.wkt)
+
+print( ( datetime(1970,1,1,0,0,10) - datetime(1970,1,1,0,0,0)).total_seconds()  )
+

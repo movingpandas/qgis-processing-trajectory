@@ -156,7 +156,7 @@ class ClipTrajectoriesByExtentAlgorithm(QgsProcessingAlgorithm):
         
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                output_fields, 
-                                               QgsWkbTypes.LineString, 
+                                               QgsWkbTypes.LineStringM, 
                                                input_layer.sourceCrs())
         
         trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
@@ -173,7 +173,7 @@ class ClipTrajectoriesByExtentAlgorithm(QgsProcessingAlgorithm):
                 intersections.append(intersection)
             
         for traj in intersections:
-            line = QgsGeometry.fromWkt(traj.to_linestring().wkt)
+            line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
             f = QgsFeature()
             f.setGeometry(line)
             f.setAttributes([traj.id])
