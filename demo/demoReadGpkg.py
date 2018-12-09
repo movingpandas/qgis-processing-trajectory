@@ -33,7 +33,7 @@ xmin, xmax, ymin, ymax = 116.36850352835575,116.37029459899574,39.90467530996989
 polygon = Polygon([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin), (xmin, ymin)])
 
 t_start = datetime.now()
-df = read_file(os.path.join(script_path,'testdata_geolife.gpkg'))
+df = read_file(os.path.join(script_path,'demodata_geolife.gpkg'))
 df['t'] = pd.to_datetime(df['t'])
 df = df.set_index('t')
 print("Finished reading {} rows in {}".format(len(df),datetime.now() - t_start))
