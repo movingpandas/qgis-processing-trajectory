@@ -81,8 +81,8 @@ class TestTrajectory(unittest.TestCase):
         # spatial 
         result = []
         for x in intersections:
-            result.append(x.to_linestring())
-        expected_result = [LineString([(5,0),(6,0),(7,0)]), LineString([(7,10),(5,10)])]
+            result.append(x.to_linestring().wkt)
+        expected_result = ["LINESTRING (5 0, 6 0, 7 0)", "LINESTRING (7 10, 5 10)"]
         self.assertEqual(result, expected_result)
         # temporal 
         result = []
@@ -131,8 +131,8 @@ class TestTrajectory(unittest.TestCase):
         # spatial
         result = []
         for x in intersections:
-            result.append(x.to_linestring())
-        expected_result = [LineString([(5,0),(6,0),(7,0)])]
+            result.append(x.to_linestring().wkt)
+        expected_result = ["LINESTRING (5 0, 6 0, 7 0)"]
         self.assertEqual(result, expected_result)
         # temporal
         result = []
@@ -155,8 +155,8 @@ class TestTrajectory(unittest.TestCase):
         # spatial
         result = []
         for x in intersections:
-            result.append(x.to_linestring())
-        expected_result = [LineString([(7,0),(6,0),(5,0)])]
+            result.append(x.to_linestring().wkt)
+        expected_result = ["LINESTRING (7 0, 6 0, 5 0)"]
         self.assertEqual(result, expected_result)
         # temporal
         result = []

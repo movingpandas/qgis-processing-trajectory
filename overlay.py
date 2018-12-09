@@ -1,0 +1,163 @@
+# -*- coding: utf-8 -*-
+
+"""
+***************************************************************************
+    overlay.py
+    ---------------------
+    Date                 : December 2018
+    Copyright            : (C) 2018 by Anita Graser
+    Email                : anitagraser@gmx.at
+***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************
+"""
+
+__author__ = 'Anita Graser'
+__date__ = 'December 2018'
+__copyright__ = '(C) 2018, Anita Graser'
+
+# This will get replaced with a git SHA1 when you do a git archive
+
+__revision__ = '$Format:%H$'
+
+import os
+import sys
+import pandas as pd 
+import numpy as np
+from geopandas import GeoDataFrame
+from shapely.geometry import Point, LineString, Polygon
+from shapely.affinity import translate
+from datetime import datetime, timedelta
+
+sys.path.append(os.path.dirname(__file__))
+
+from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
+import trajectory 
+
+
+def _connect_points(row):
+    pt0 = row['prev_pt']
+    pt1 = row['geometry']
+    if type(pt0) != Point:
+        return None
+    if pt0 == pt1:
+        # to avoid intersection issues with zero length lines
+        pt1 = translate(pt1, 0.00000001, 0.00000001)
+    return LineString(list(pt0.coords) + list(pt1.coords))
+    
+def _to_line_df(traj):
+    line_df = traj.df.copy()
+    line_df['prev_pt'] = line_df['geometry'].shift()
+    line_df['t'] = traj.df.index
+    line_df['prev_t'] = line_df['t'].shift()
+    line_df['line'] = line_df.apply(_connect_points, axis=1)
+    return line_df.set_geometry('line')[1:]
+
+def _get_spatiotemporal_ref(row):
+    #print(type(row['geo_intersection']))
+    if type(row['geo_intersection']) == LineString:
+        pt0 = Point(row['geo_intersection'].coords[0])
+        ptn = Point(row['geo_intersection'].coords[-1])
+        t = row['prev_t']
+        t_delta = row['t'] - t
+        len = row['line'].length
+        t0 = t + (t_delta * row['line'].project(pt0)/len)
+        tn = t + (t_delta * row['line'].project(ptn)/len)
+        # to avoid intersection issues with zero length lines
+        if ptn == translate(pt0, 0.00000001, 0.00000001):
+            t0 = row['prev_t']
+            tn = row['t']
+        # to avoid numerical issues with timestamps
+        if is_equal(tn, row['t']):
+            tn = row['t']
+        if is_equal(t0, row['prev_t']):
+            t0 = row['prev_t']
+        return {'pt0':pt0, 'ptn':ptn, 't0':t0, 'tn':tn}
+    else:
+        return None
+
+def _dissolve_time_ranges(t_ranges):
+    new = []
+    start = None
+    end = None
+    for t_range in t_ranges:
+        if start is None:
+            start = t_range[0]
+            end = t_range[1]
+        elif end == t_range[0]:
+            end = t_range[1]
+        elif t_range[0] > end and is_equal(t_range[0], end):
+            end = t_range[1]
+        else:
+            new.append((start, end))
+            start = t_range[0]
+            end = t_range[1]
+    new.append((start, end))
+    return new
+
+def is_equal(t1, t2):
+    return abs(t1 - t2) < timedelta(milliseconds=10)
+     
+def intersects(traj, polygon):
+    return traj.to_linestring().intersects(polygon)
+
+def intersection(traj, polygon):
+    if not intersects(traj, polygon):
+        return []
+    intersections = [] # list of trajectories
+    # Note: If the trajectory contains consecutive rows without location change 
+    #       these will result in zero length lines that return an empty 
+    #       intersection.
+    line_df = _to_line_df(traj)
+    line_df['geo_intersection'] = line_df.intersection(polygon)
+    line_df['intersection'] = line_df.apply(_get_spatiotemporal_ref, axis=1)
+    #pd.set_option('display.max_colwidth', -1)
+    j = 0
+    t_ranges = []
+    
+    # For unknown reasons, the following for loop creates wrong results if there 
+    # is no other column besides the geometry column.
+    has_dummy = False
+    if len(traj.df.columns) < 2:
+        traj.df['dummy_that_stops_things_from_breaking'] = 1
+        has_dummy = True
+    
+    spatial_index = line_df.sindex
+    if spatial_index:
+        possible_matches_index = list(spatial_index.intersection(polygon.bounds))
+        possible_matches = line_df.iloc[possible_matches_index].sort_index()
+    else:
+        possible_matches = line_df
+            
+    for index, row in possible_matches.iterrows():
+        x = row['intersection']
+        if x is None: 
+            continue
+        t_ranges.append((x['t0'], x['tn']))
+        # Create row at entry point with attributes from previous row = pad 
+        row0 = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(x['t0'], method='pad')]
+        row0['geometry'] = x['pt0']
+        # Create row at exit point
+        rown = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(x['tn'], method='pad')]
+        rown['geometry'] = x['ptn']
+        # Insert rows
+        traj.df.loc[x['t0']] = row0
+        traj.df.loc[x['tn']] = rown
+        traj.df = traj.df.sort_index()
+    
+    if has_dummy:
+        traj.df.drop(columns=['dummy_that_stops_things_from_breaking'])
+        
+    t_ranges = _dissolve_time_ranges(t_ranges)
+    for t_range in t_ranges:
+        df = traj.get_segment_between(t_range[0], t_range[1])
+        intersections.append(trajectory.Trajectory("{}_{}".format(traj.id, j), df))
+        j += 1
+        
+    return intersections
+

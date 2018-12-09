@@ -89,10 +89,10 @@ class ClipTrajectoriesByExtentAlgorithm(QgsProcessingAlgorithm):
         return self.tr("Clip trajectories by extent")
 
     def group(self):
-        return self.tr("Basic")
+        return self.tr("Overlay")
 
     def groupId(self):
-        return "TrajectoryBasic"
+        return "TrajectoryOverlay"
 
     def shortHelpString(self):
         return self.tr(
