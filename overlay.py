@@ -36,7 +36,7 @@ from datetime import datetime, timedelta
 
 sys.path.append(os.path.dirname(__file__))
 
-from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
+from geometry_utils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
 import trajectory 
 
 

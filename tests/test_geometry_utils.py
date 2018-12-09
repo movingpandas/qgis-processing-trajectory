@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    testGeometryUtils.py
+    test_geometry_utils.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
@@ -20,7 +20,7 @@ ATTENTION!
 If you use OSGeo4W, you need to run the following command first:
 call C:\OSGeo4W64\bin\py3_env.bat
 
-python3 testGeometryUtils.py -v
+python3 test_geometry_utils.py -v
 
 or if you want to run all tests at once:
 
@@ -35,7 +35,7 @@ from shapely.geometry import Point
 sys.path.append("..")
 
 from trajectory import Trajectory 
-from geometryUtils import azimuth, calculate_initial_compass_bearing, angular_difference
+from geometry_utils import azimuth, calculate_initial_compass_bearing, angular_difference
 
  
 class TestGeometryUtils(unittest.TestCase):

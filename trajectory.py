@@ -37,12 +37,11 @@ from datetime import datetime, timedelta
 sys.path.append(os.path.dirname(__file__))
 
 import overlay
-from geometryUtils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
+from geometry_utils import azimuth, calculate_initial_compass_bearing, measure_distance_spherical, measure_distance_euclidean
 
 
 def to_unixtime(t):
     return (t - datetime(1970,1,1,0,0,0)).total_seconds() 
-
 
 
 class Trajectory():

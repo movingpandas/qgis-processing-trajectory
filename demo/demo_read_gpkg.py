@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    demoReadGpkg.py
+    demo_read_gpkg.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser

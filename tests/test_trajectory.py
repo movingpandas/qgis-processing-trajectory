@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    testTrajectory.py
+    test_trajectory.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
@@ -20,7 +20,7 @@ ATTENTION!
 If you use OSGeo4W, you need to run the following command first:
 call C:\OSGeo4W64\bin\py3_env.bat
 
-python3 testTrajectory.py -v
+python3 test_trajectory.py -v
 
 or if you want to run all tests at once:
 
