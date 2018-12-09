@@ -50,6 +50,8 @@ df = pd.DataFrame(data).set_index('t')
 geo_df = GeoDataFrame(df, crs={'init': '31256'})
 traj = Trajectory(1,geo_df)
 
+
+
 #traj.add_heading('spherical') 
 #traj.add_speed()
 #
@@ -74,8 +76,8 @@ traj = Trajectory(1,geo_df)
 
 
 
-l = LineString([Point(0.0, 1.0, 0), (2.0, 3.0, 1), Point(4.0, 5.0, 4)])
-print(l.wkt)
+#l = LineString([Point(0.0, 1.0, 0), (2.0, 3.0, 1), Point(4.0, 5.0, 4)])
+#print(l.wkt)
 
-print( ( datetime(1970,1,1,0,0,10) - datetime(1970,1,1,0,0,0)).total_seconds()  )
+#print( ( datetime(1970,1,1,0,0,10) - datetime(1970,1,1,0,0,0)).total_seconds()  )
 

@@ -46,9 +46,9 @@ from trajectory import Trajectory
 class TestTrajectory(unittest.TestCase):
  
     def test_linestring_wkt(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -57,9 +57,9 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result) 
         
     def test_linstring_m_wkt(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(1970,1,1,0,0,1)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(1970,1,1,0,0,2)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(1970,1,1,0,0,3)}]
+        data = [{'geometry':Point(0,0), 't':datetime(1970,1,1,0,0,1)},
+                {'geometry':Point(6,0), 't':datetime(1970,1,1,0,0,2)},
+                {'geometry':Point(10,0), 't':datetime(1970,1,1,0,0,3)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -69,11 +69,11 @@ class TestTrajectory(unittest.TestCase):
          
     def test_two_intersections_with_same_polygon(self):
         polygon = Polygon([(5,-5), (7,-5), (7,12), (5,12), (5,-5)])
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -94,12 +94,12 @@ class TestTrajectory(unittest.TestCase):
                 
     def test_intersection_with_duplicate_traj_points(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,7,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,11,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,7,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,11,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)
@@ -119,11 +119,11 @@ class TestTrajectory(unittest.TestCase):
  
     def test_one_intersection(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)        
@@ -143,11 +143,11 @@ class TestTrajectory(unittest.TestCase):
          
     def test_one_intersection_reversed(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
-        data = [{'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,6,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,6,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,0), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)   
@@ -167,11 +167,11 @@ class TestTrajectory(unittest.TestCase):
          
     def test_intersection_with_milliseconds(self):
         polygon = Polygon([(5,-5), (7,-5), (8,5), (5,5), (5,-5)])
-        data = [{'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,0), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)
@@ -187,9 +187,9 @@ class TestTrajectory(unittest.TestCase):
     def test_intersection_with_numerical_time_issues(self):     
         xmin, xmax, ymin, ymax = 116.36850352835575,116.37029459899574,39.904675309969896,39.90772814977718 
         polygon = Polygon([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin), (xmin, ymin)])
-        data = [{'id':1, 'geometry':Point(116.36855, 39.904926), 't':datetime(2009,3,10,11,3,35)},
-            {'id':1, 'geometry':Point(116.368612, 39.904877), 't':datetime(2009,3,10,11,3,37)},
-            {'id':1, 'geometry':Point(116.368644, 39.90484), 't':datetime(2009,3,10,11,3,39)}]        
+        data = [{'geometry':Point(116.36855, 39.904926), 't':datetime(2009,3,10,11,3,35)},
+                {'geometry':Point(116.368612, 39.904877), 't':datetime(2009,3,10,11,3,37)},
+                {'geometry':Point(116.368644, 39.90484), 't':datetime(2009,3,10,11,3,39)}]        
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -200,11 +200,11 @@ class TestTrajectory(unittest.TestCase):
          
     def test_no_intersection(self):
         polygon = Polygon([(105,-5), (107,-5), (107,12), (105,12), (105,-5)])
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -213,9 +213,9 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result) 
 
     def test_get_position_at_existing_timestamp(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -224,9 +224,9 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_position_of_nearest_timestamp(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -238,31 +238,31 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_get_segment_between_existing_timestamps(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-            {'id':1, 'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.get_segment_between(datetime(2018,1,1,12,10,0),datetime(2018,1,1,12,30,0))
-        data = [{'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)}]
+        data = [{'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)}]
         expected_result = pd.DataFrame(data).set_index('t')
         pd.testing.assert_frame_equal(result, expected_result)
-        data = [{'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}]
+        data = [{'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}]
         expected_result = pd.DataFrame(data).set_index('t')
         self.assertNotEqual(result.to_dict(), expected_result.to_dict()) 
         
     def test_add_heading(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-            {'id':1, 'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
-            {'id':1, 'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+                {'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
+                {'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -272,8 +272,8 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_add_heading_latlon(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '4326'})
         traj = Trajectory(1,geo_df)
@@ -283,8 +283,8 @@ class TestTrajectory(unittest.TestCase):
         self.assertAlmostEqual(result[0], expected_result[0], 5)
         
     def test_add_meters_per_sec(self):
-        data = [{'id':1, 'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
+        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
@@ -294,8 +294,8 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_add_meters_per_sec_latlon(self):
-        data = [{'id':1, 'geometry':Point(0,1), 't':datetime(2018,1,1,12,0,0)},
-            {'id':1, 'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
+        data = [{'geometry':Point(0,1), 't':datetime(2018,1,1,12,0,0)},
+                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
         df = pd.DataFrame(data).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '4326'})
         traj = Trajectory(1,geo_df)

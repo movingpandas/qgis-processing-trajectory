@@ -198,27 +198,33 @@ class Trajectory():
         line_df['geo_intersection'] = line_df.intersection(polygon)
         line_df['intersection'] = line_df.apply(self.get_spatiotemporal_ref, axis=1)
         #pd.set_option('display.max_colwidth', -1)
-        #print(line_df['intersection'])
         j = 0
         t_ranges = []
+        # For unknown reasons, the following for loop creates wrong results if there 
+        # is no other column besides the geometry column.
+        has_dummy = False
+        if len(self.df.columns) < 2:
+            self.df['dummy_that_stops_things_from_breaking'] = 1
+            has_dummy = True
         for index, row in line_df.iterrows():
             x = row['intersection']
             if x is None: 
                 continue
             t_ranges.append((x['t0'], x['tn']))
-            # create row at entry point with attributes from previous row = pad 
+            # Create row at entry point with attributes from previous row = pad 
             row0 = self.df.iloc[self.df.index.drop_duplicates().get_loc(x['t0'], method='pad')]
             row0['geometry'] = x['pt0']
-            # create row at exit point
+            # Create row at exit point
             rown = self.df.iloc[self.df.index.drop_duplicates().get_loc(x['tn'], method='pad')]
             rown['geometry'] = x['ptn']
-            # insert rows
+            # Insert rows
             self.df.loc[x['t0']] = row0
             self.df.loc[x['tn']] = rown
             self.df = self.df.sort_index()
         t_ranges = self.dissolve_time_ranges(t_ranges)
+        if has_dummy:
+            self.df.drop(columns=['dummy_that_stops_things_from_breaking'])
         for t_range in t_ranges:
-            #print(t_range)
             df = self.get_segment_between(t_range[0], t_range[1])
             intersections.append(Trajectory("{}_{}".format(self.id, j), df))
             j += 1
