@@ -31,15 +31,23 @@ from trajectory import Trajectory
 
 xmin, xmax, ymin, ymax = 116.36850352835575,116.37029459899574,39.904675309969896,39.90772814977718 
 polygon = Polygon([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin), (xmin, ymin)])
+
 t_start = datetime.now()
 df = read_file(os.path.join(script_path,'testdata_geolife.gpkg'))
 df['t'] = pd.to_datetime(df['t'])
 df = df.set_index('t')
-#print(df)
+print("Finished reading {} rows in {}".format(len(df),datetime.now() - t_start))
+
+t_start = datetime.now()
+trajectories = []
+for key, values in df.groupby(['trajectory_id']):
+    trajectories.append(Trajectory(key, values))
+print("Finished creating {} trajectories in {}".format(len(trajectories),datetime.now() - t_start))
+
+t_start = datetime.now()    
 intersections = []
 for key, values in df.groupby(['trajectory_id']):
     traj = Trajectory(key, values)
     for intersection in traj.intersection(polygon):
         intersections.append(intersection)
-t_end = datetime.now()        
-print("Found {} intersections in {}".format(len(intersections),t_end-t_start))
+print("Found {} intersections in {}".format(len(intersections),datetime.now() - t_start))

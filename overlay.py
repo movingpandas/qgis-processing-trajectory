@@ -81,23 +81,29 @@ def _get_spatiotemporal_ref(row):
     else:
         return None
 
-def _dissolve_time_ranges(t_ranges):
+def _dissolve_ranges(ranges):
     new = []
     start = None
     end = None
-    for t_range in t_ranges:
+    for range in ranges:
         if start is None:
-            start = t_range[0]
-            end = t_range[1]
-        elif end == t_range[0]:
-            end = t_range[1]
-        elif t_range[0] > end and is_equal(t_range[0], end):
-            end = t_range[1]
+            start = range[0]
+            end = range[1]
+            pt0 = range[2]
+            ptn = range[3]
+        elif end == range[0]:
+            end = range[1]
+            ptn = range[3]
+        elif range[0] > end and is_equal(range[0], end):
+            end = range[1]
+            ptn = range[3]
         else:
-            new.append((start, end))
-            start = t_range[0]
-            end = t_range[1]
-    new.append((start, end))
+            new.append((start, end, pt0, ptn))
+            start = range[0]
+            end = range[1]
+            pt0 = range[2]
+            ptn = range[3]
+    new.append((start, end, pt0, ptn))
     return new
 
 def is_equal(t1, t2):
@@ -111,7 +117,7 @@ def intersection(traj, polygon):
     if not intersects(traj, polygon):
         return []
     j = 0
-    t_ranges = []
+    ranges = []
     intersections = [] # list of trajectories
 
     line_df = _to_line_df(traj)
@@ -140,26 +146,28 @@ def intersection(traj, polygon):
         x = row['intersection']
         if x is None: 
             continue
-        t_ranges.append((x['t0'], x['tn']))
+        ranges.append((x['t0'], x['tn'], x['pt0'], x['ptn']))
+           
+    ranges = _dissolve_ranges(ranges)
+    for range in ranges:
+        t0, tn, pt0, ptn = range[0], range[1], range[2], range[3]
         # Create row at entry point with attributes from previous row = pad 
-        row0 = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(x['t0'], method='pad')]
-        row0['geometry'] = x['pt0']
+        row0 = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(t0, method='pad')]
+        row0['geometry'] = pt0
         # Create row at exit point
-        rown = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(x['tn'], method='pad')]
-        rown['geometry'] = x['ptn']
+        rown = traj.df.iloc[traj.df.index.drop_duplicates().get_loc(tn, method='pad')]
+        rown['geometry'] = ptn
         # Insert rows
-        traj.df.loc[x['t0']] = row0
-        traj.df.loc[x['tn']] = rown
+        traj.df.loc[t0] = row0
+        traj.df.loc[tn] = rown
         traj.df = traj.df.sort_index()
-    
-    if has_dummy:
-        traj.df.drop(columns=['dummy_that_stops_things_from_breaking'])
         
-    t_ranges = _dissolve_time_ranges(t_ranges)
-    for t_range in t_ranges:
-        df = traj.get_segment_between(t_range[0], t_range[1])
+        df = traj.get_segment_between(range[0], range[1])
         intersections.append(trajectory.Trajectory("{}_{}".format(traj.id, j), df))
         j += 1
-        
+
+    if has_dummy:
+        traj.df.drop(columns=['dummy_that_stops_things_from_breaking'])
+                
     return intersections
 
