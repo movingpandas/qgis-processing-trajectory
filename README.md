@@ -1,11 +1,8 @@
-# QGIS Processing Trajectory tools
+# TrajectoryPandas
 
-This plugin adds trajectory tools to the QGIS Processing toolbox.
+TrajectoryPandas implements a Trajectory class and corresponding methods based on **GeoPandas**.
 
-The core algorithms can also be used stand-alone, as demonstrated in the tests.
-
-
-This plugin requires **GeoPandas**!
+Check the demo folder for usage examples!
 
 If you are on Windows, here's how to install GeoPandas for OSGeo4W:
 
@@ -16,4 +13,10 @@ If you are on Windows, here's how to install GeoPandas for OSGeo4W:
 5. From https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona: download Fiona-1.7.13-cp37-cp37m-win_amd64.whl
 6. OSGeo4W shell: pip3 install <path-to-download>\Fiona-1.7.13-cp37-cp37m-win_amd64.whl
 7. OSGeo4W shell: pip3 install geopandas
+
+
+## QGIS Processing Trajectory tools
+
+This plugin uses TrajectoryPandas to add trajectory tools to the QGIS Processing toolbox. 
+
 
