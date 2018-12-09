@@ -107,18 +107,14 @@ def intersects(traj, polygon):
     return traj.to_linestring().intersects(polygon)
 
 def intersection(traj, polygon):
+    #pd.set_option('display.max_colwidth', -1)
     if not intersects(traj, polygon):
         return []
-    intersections = [] # list of trajectories
-    # Note: If the trajectory contains consecutive rows without location change 
-    #       these will result in zero length lines that return an empty 
-    #       intersection.
-    line_df = _to_line_df(traj)
-    line_df['geo_intersection'] = line_df.intersection(polygon)
-    line_df['intersection'] = line_df.apply(_get_spatiotemporal_ref, axis=1)
-    #pd.set_option('display.max_colwidth', -1)
     j = 0
     t_ranges = []
+    intersections = [] # list of trajectories
+
+    line_df = _to_line_df(traj)
     
     # For unknown reasons, the following for loop creates wrong results if there 
     # is no other column besides the geometry column.
@@ -133,7 +129,13 @@ def intersection(traj, polygon):
         possible_matches = line_df.iloc[possible_matches_index].sort_index()
     else:
         possible_matches = line_df
-            
+        
+    # Note: If the trajectory contains consecutive rows without location change 
+    #       these will result in zero length lines that return an empty 
+    #       intersection.        
+    possible_matches['geo_intersection'] = possible_matches.intersection(polygon)
+    possible_matches['intersection'] = possible_matches.apply(_get_spatiotemporal_ref, axis=1)
+        
     for index, row in possible_matches.iterrows():
         x = row['intersection']
         if x is None: 
