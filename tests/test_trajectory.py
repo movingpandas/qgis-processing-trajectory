@@ -46,10 +46,11 @@ from trajectory import Trajectory
 class TestTrajectory(unittest.TestCase):
  
     def test_linestring_wkt(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.to_linestring().wkt
@@ -57,10 +58,11 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result) 
         
     def test_linstring_m_wkt(self):
-        data = [{'geometry':Point(0,0), 't':datetime(1970,1,1,0,0,1)},
-                {'geometry':Point(6,0), 't':datetime(1970,1,1,0,0,2)},
-                {'geometry':Point(10,0), 't':datetime(1970,1,1,0,0,3)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(1970,1,1,0,0,1)},
+            {'geometry':Point(6,0), 't':datetime(1970,1,1,0,0,2)},
+            {'geometry':Point(10,0), 't':datetime(1970,1,1,0,0,3)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.to_linestringm_wkt()
@@ -68,10 +70,11 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result) 
 
     def test_get_position_at_existing_timestamp(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.get_position_at(datetime(2018,1,1,12,10,0))      
@@ -79,10 +82,11 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_position_of_nearest_timestamp(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,20,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.get_position_at(datetime(2018,1,1,12,14,0))      
@@ -93,32 +97,36 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_get_segment_between_existing_timestamps(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
-                {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+            {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         result = traj.get_segment_between(datetime(2018,1,1,12,10,0),datetime(2018,1,1,12,30,0))
-        data = [{'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)}]
-        expected_result = pd.DataFrame(data).set_index('t')
+        expected_result = pd.DataFrame([
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)}
+            ]).set_index('t')
         pd.testing.assert_frame_equal(result, expected_result)
-        data = [{'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
-                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}]
-        expected_result = pd.DataFrame(data).set_index('t')
+        expected_result = pd.DataFrame([
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
+            {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}
+            ]).set_index('t')
         self.assertNotEqual(result.to_dict(), expected_result.to_dict()) 
         
     def test_add_heading(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
-                {'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
-                {'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(6,-6), 't':datetime(2018,1,1,12,20,0)},
+            {'geometry':Point(-6,-6), 't':datetime(2018,1,1,12,20,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         traj.add_heading()
@@ -127,9 +135,10 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_add_heading_latlon(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(10,10), 't':datetime(2018,1,1,12,10,0)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '4326'})
         traj = Trajectory(1,geo_df)
         traj.add_heading()
@@ -138,9 +147,10 @@ class TestTrajectory(unittest.TestCase):
         self.assertAlmostEqual(result[0], expected_result[0], 5)
         
     def test_add_meters_per_sec(self):
-        data = [{'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
         traj.add_meters_per_sec()
@@ -149,9 +159,10 @@ class TestTrajectory(unittest.TestCase):
         self.assertEqual(result, expected_result)
         
     def test_add_meters_per_sec_latlon(self):
-        data = [{'geometry':Point(0,1), 't':datetime(2018,1,1,12,0,0)},
-                {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}]
-        df = pd.DataFrame(data).set_index('t')
+        df = pd.DataFrame([
+            {'geometry':Point(0,1), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,0,1)}
+            ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '4326'})
         traj = Trajectory(1,geo_df)
         traj.add_meters_per_sec()
