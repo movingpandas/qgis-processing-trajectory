@@ -44,7 +44,19 @@ from trajectory import Trajectory
 
  
 class TestTrajectory(unittest.TestCase):
- 
+
+    def test_endlocation(self):
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)}
+            ]).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.get_end_location()
+        expected_result = Point(10,0)
+        self.assertEqual(result, expected_result)
+
     def test_linestring_wkt(self):
         df = pd.DataFrame([
             {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
