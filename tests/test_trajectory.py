@@ -118,7 +118,7 @@ class TestTrajectory(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
-        result = traj.get_segment_between(datetime(2018,1,1,12,10,0),datetime(2018,1,1,12,30,0))
+        result = traj.get_segment_between(datetime(2018,1,1,12,10,0),datetime(2018,1,1,12,30,0)).df
         expected_result = pd.DataFrame([
             {'geometry':Point(6,0), 't':datetime(2018,1,1,12,10,0)},
             {'geometry':Point(10,0), 't':datetime(2018,1,1,12,15,0)},
@@ -131,6 +131,22 @@ class TestTrajectory(unittest.TestCase):
             {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,1)}
             ]).set_index('t')
         self.assertNotEqual(result.to_dict(), expected_result.to_dict()) 
+        
+    def test_get_segment_between_new_timestamps(self):
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(20,0), 't':datetime(2018,1,1,12,20,0)},
+            {'geometry':Point(30,0), 't':datetime(2018,1,1,12,30,0)}
+            ]).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'})
+        traj = Trajectory(1,geo_df)
+        result = traj.get_segment_between(datetime(2018,1,1,12,5,0),datetime(2018,1,1,12,25,0,50)).df
+        expected_result = pd.DataFrame([
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(20,0), 't':datetime(2018,1,1,12,20,0)}
+            ]).set_index('t')
+        pd.testing.assert_frame_equal(result, expected_result)              
         
     def test_add_heading(self):
         df = pd.DataFrame([

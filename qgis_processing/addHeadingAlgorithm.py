@@ -17,14 +17,6 @@
 ***************************************************************************
 """
 
-__author__ = 'Anita Graser'
-__date__ = 'December 2018'
-__copyright__ = '(C) 2018, Anita Graser'
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = '$Format:%H$'
-
 import os
 import sys 
 import pandas as pd 

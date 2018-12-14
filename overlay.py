@@ -17,14 +17,6 @@
 ***************************************************************************
 """
 
-__author__ = 'Anita Graser'
-__date__ = 'December 2018'
-__copyright__ = '(C) 2018, Anita Graser'
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = '$Format:%H$'
-
 import os
 import sys
 import pandas as pd 
@@ -162,12 +154,14 @@ def clip(traj, polygon):
         traj.df.loc[tn] = rown
         traj.df = traj.df.sort_index()
         
-        df = traj.get_segment_between(range[0], range[1])
+        intersection = traj.get_segment_between(range[0], range[1])
+        intersection.crs = traj.crs
+        intersection.id = "{}_{}".format(traj.id, j)
         
         if has_dummy:
-            df.drop(columns=['dummy_that_stops_things_from_breaking'], axis=1, inplace=True)        
+            intersection.df.drop(columns=['dummy_that_stops_things_from_breaking'], axis=1, inplace=True)        
         
-        intersections.append(trajectory.Trajectory("{}_{}".format(traj.id, j), df))
+        intersections.append(intersection)
         j += 1
          
     return intersections
