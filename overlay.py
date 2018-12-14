@@ -30,7 +30,7 @@ import sys
 import pandas as pd 
 import numpy as np
 from geopandas import GeoDataFrame
-from shapely.geometry import Point, LineString, Polygon
+from shapely.geometry import Point, LineString, Polygon, shape
 from shapely.affinity import translate
 from datetime import datetime, timedelta
 
@@ -111,8 +111,8 @@ def is_equal(t1, t2):
      
 def intersects(traj, polygon):
     return traj.to_linestring().intersects(polygon)
-
-def intersection(traj, polygon):
+    
+def clip(traj, polygon):
     #pd.set_option('display.max_colwidth', -1)
     if not intersects(traj, polygon):
         return []
@@ -122,7 +122,7 @@ def intersection(traj, polygon):
 
     line_df = _to_line_df(traj)
     
-    # For unknown reasons, the following for loop creates wrong results if there 
+    # The following for loop creates wrong results if there 
     # is no other column besides the geometry column.
     has_dummy = False
     if len(traj.df.columns) < 2:
@@ -163,11 +163,31 @@ def intersection(traj, polygon):
         traj.df = traj.df.sort_index()
         
         df = traj.get_segment_between(range[0], range[1])
+        
+        if has_dummy:
+            df.drop(columns=['dummy_that_stops_things_from_breaking'], axis=1, inplace=True)        
+        
         intersections.append(trajectory.Trajectory("{}_{}".format(traj.id, j), df))
         j += 1
-
-    if has_dummy:
-        traj.df.drop(columns=['dummy_that_stops_things_from_breaking'])
-                
+         
     return intersections
+
+def intersection(traj, feature):
+    if type(feature) != dict:
+        raise TypeError("Trajectories can only be intersected with a Shapely feature!")
+    try:
+        geometry = shape(feature['geometry'])
+        properties = feature['properties']
+    except:
+        raise TypeError("Trajectories can only be intersected with a Shapely feature!")
+    
+    intersections = clip(traj, geometry)
+    
+    result = []
+    for intersection in intersections:
+        for key, value in properties.items():
+            intersection.df['intersecting_'+key] = value
+        result.append(intersection)
+                
+    return result
 

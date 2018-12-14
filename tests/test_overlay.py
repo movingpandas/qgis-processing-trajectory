@@ -45,7 +45,7 @@ from trajectory import Trajectory
  
 class TestOverlay(unittest.TestCase):
          
-    def test_two_intersections_with_same_polygon(self):
+    def test_clip_two_intersections_with_same_polygon(self):
         polygon = Polygon([(5,-5), (7,-5), (7,12), (5,12), (5,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -56,7 +56,7 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
-        intersections = traj.intersection(polygon)
+        intersections = traj.clip(polygon)
         # spatial 
         result = []
         for x in intersections:
@@ -71,7 +71,7 @@ class TestOverlay(unittest.TestCase):
                            (datetime(2018,1,1,12,39,0), datetime(2018,1,1,12,45,0))]
         self.assertEqual(result, expected_result) 
                 
-    def test_intersection_with_duplicate_traj_points(self):
+    def test_clip_with_duplicate_traj_points(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -83,7 +83,7 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)
-        intersections = traj.intersection(polygon)
+        intersections = traj.clip(polygon)
         # spatial
         result = []
         for x in intersections:
@@ -97,7 +97,7 @@ class TestOverlay(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,5,0), datetime(2018,1,1,12,8,0))]
         self.assertEqual(result, expected_result) 
  
-    def test_one_intersection(self):
+    def test_clip_with_one_intersection(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -108,7 +108,7 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)        
-        intersections = traj.intersection(polygon)
+        intersections = traj.clip(polygon)
         # spatial
         result = []
         for x in intersections:
@@ -122,7 +122,7 @@ class TestOverlay(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,5,0), datetime(2018,1,1,12,7,0))]
         self.assertEqual(result, expected_result) 
          
-    def test_one_intersection_reversed(self):
+    def test_clip_with_one_intersection_reversed(self):
         polygon = Polygon([(5,-5), (7,-5), (7,5), (5,5), (5,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
@@ -133,7 +133,7 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)   
-        intersections = traj.intersection(polygon)
+        intersections = traj.clip(polygon)
         # spatial
         result = []
         for x in intersections:
@@ -147,7 +147,7 @@ class TestOverlay(unittest.TestCase):
         expected_result = [(datetime(2018,1,1,12,25,0), datetime(2018,1,1,12,35,0))]
         self.assertEqual(result, expected_result) 
          
-    def test_intersection_with_milliseconds(self):
+    def test_clip_with_milliseconds(self):
         polygon = Polygon([(5,-5), (7,-5), (8,5), (5,5), (5,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,10), 't':datetime(2018,1,1,12,0,0)},
@@ -158,7 +158,7 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'} )
         traj = Trajectory(1,geo_df)
-        intersection = traj.intersection(polygon)[0]
+        intersection = traj.clip(polygon)[0]
         # spatial
         result = intersection.to_linestring().wkt
         expected_result = "LINESTRING (7.5 0, 6 0, 5 0)"
@@ -167,7 +167,7 @@ class TestOverlay(unittest.TestCase):
         self.assertAlmostEqual(intersection.get_start_time(), datetime(2018,1,1,12,24,22,500000), delta=timedelta(milliseconds=1))
         self.assertEqual(intersection.get_end_time(), datetime(2018,1,1,12,35,0))
          
-    def test_intersection_with_numerical_time_issues(self):     
+    def test_clip_with_numerical_time_issues(self):     
         xmin, xmax, ymin, ymax = 116.36850352835575,116.37029459899574,39.904675309969896,39.90772814977718 
         polygon = Polygon([(xmin, ymin), (xmin, ymax), (xmax, ymax), (xmax, ymin), (xmin, ymin)])
         df = pd.DataFrame([
@@ -177,12 +177,12 @@ class TestOverlay(unittest.TestCase):
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
-        intersection = traj.intersection(polygon)[0]
+        intersection = traj.clip(polygon)[0]
         result = intersection.to_linestring().wkt
         expected_result = "LINESTRING (116.36855 39.904926, 116.368612 39.904877, 116.368644 39.90484)"
         self.assertEqual(result, expected_result)         
          
-    def test_no_intersection(self):
+    def test_clip_with_no_intersection(self):
         polygon = Polygon([(105,-5), (107,-5), (107,12), (105,12), (105,-5)])
         df = pd.DataFrame([
             {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
@@ -192,9 +192,27 @@ class TestOverlay(unittest.TestCase):
             {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '31256'})
         traj = Trajectory(1,geo_df)
-        result = traj.intersection(polygon)
+        result = traj.clip(polygon)
         expected_result = []
         self.assertEqual(result, expected_result) 
+        
+    def test_intersection_with_one_intersection(self):
+        feature = {
+            'geometry': {'type': 'Polygon', 'coordinates': [[(5,-5), (7,-5), (8,5), (5,5), (5,-5)]]},
+            'properties': {'id': 1, 'name': 'foo'}  }
+        df = pd.DataFrame([
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
+            {'geometry':Point(6,0), 't':datetime(2018,1,1,12,6,0)},
+            {'geometry':Point(10,0), 't':datetime(2018,1,1,12,10,0)},
+            {'geometry':Point(10,10), 't':datetime(2018,1,1,12,30,0)},
+            {'geometry':Point(0,10), 't':datetime(2018,1,1,13,0,0)}
+            ]).set_index('t')
+        geo_df = GeoDataFrame(df, crs={'init': '31256'} )
+        traj = Trajectory(1,geo_df)        
+        intersections = traj.intersection(feature)
+        result = list(intersections[0].df.columns)
+        expected_result = ['geometry', 'intersecting_id', 'intersecting_name']
+        self.assertCountEqual(result, expected_result)
         
  
 if __name__ == '__main__':

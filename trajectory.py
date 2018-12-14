@@ -141,7 +141,9 @@ class Trajectory():
         else:
             raise RuntimeError('Dataframe needs at least two points to make line!') 
     
-    def intersection(self, polygon):
-        return overlay.intersection(self, polygon)
+    def clip(self, polygon):
+        return overlay.clip(self, polygon)
     
+    def intersection(self, feature):
+        return overlay.intersection(self, feature)
     
