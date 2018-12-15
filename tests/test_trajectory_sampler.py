@@ -94,18 +94,18 @@ class TestTrajectorySampler(unittest.TestCase):
     
     def test_sample_irregular_updates(self):
         df = pd.DataFrame([
-            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,0)},
-            {'geometry':Point(0,3), 't':datetime(2018,1,1,12,3,0)},
-            {'geometry':Point(0,6), 't':datetime(2018,1,1,12,6,0)},
-            {'geometry':Point(0,9), 't':datetime(2018,1,1,12,9,0)},
-            {'geometry':Point(0,10), 't':datetime(2018,1,1,12,10,0)},
-            {'geometry':Point(0,14), 't':datetime(2018,1,1,12,14,0)},
-            {'geometry':Point(0,19), 't':datetime(2018,1,1,12,19,0)},
+            {'geometry':Point(0,0), 't':datetime(2018,1,1,12,0,1)},
+            {'geometry':Point(0,3), 't':datetime(2018,1,1,12,3,2)},
+            {'geometry':Point(0,6), 't':datetime(2018,1,1,12,6,1)},
+            {'geometry':Point(0,9), 't':datetime(2018,1,1,12,9,2)},
+            {'geometry':Point(0,10), 't':datetime(2018,1,1,12,10,2)},
+            {'geometry':Point(0,14), 't':datetime(2018,1,1,12,14,3)},
+            {'geometry':Point(0,19), 't':datetime(2018,1,1,12,19,4)},
             {'geometry':Point(0,20), 't':datetime(2018,1,1,12,20,0)}
             ]).set_index('t')
         geo_df = GeoDataFrame(df, crs={'init': '4326'})
         traj = Trajectory(1,geo_df)
-        sampler = TrajectorySampler(traj)
+        sampler = TrajectorySampler(traj, timedelta(seconds=5))
         past_timedelta = timedelta(minutes=5)
         future_timedelta = timedelta(minutes=5)
         sample = sampler.get_sample(past_timedelta, future_timedelta)

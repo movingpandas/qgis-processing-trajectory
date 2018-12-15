@@ -59,12 +59,15 @@ class TrajectorySampler():
         return True 
         
     def is_sampling_successful(self, start_time, past_time, future_time):
+        sample_times = []
         for t in [start_time, past_time, future_time]:
             #print("Testing {}".format(t))
             row = self.traj.get_row_at(t)
             if abs(row['t'] - t) > self.tolerance: 
-                return False    
-        return True    
+                return False
+            else:
+                sample_times.append(row['t'])    
+        return sample_times
     
     def get_sample(self, past_timedelta, future_timedelta, min_meters_per_sec = 0.3):
         if not self.is_sampling_possible(past_timedelta, future_timedelta, min_meters_per_sec):
@@ -84,8 +87,10 @@ class TrajectorySampler():
             start_timedelta = start_time - first_move_time
             past_time = start_time - past_timedelta
             future_time = start_time + future_timedelta   
-            if self.is_sampling_successful(start_time, past_time, future_time):
+            x = self.is_sampling_successful(start_time, past_time, future_time)
+            if x: 
                 #print('OK')
+                start_time, past_time, future_time = x     
                 successful = True
                 break                           
             
