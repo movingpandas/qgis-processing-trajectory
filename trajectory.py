@@ -85,12 +85,18 @@ class Trajectory():
     def get_duration(self):
         return self.get_end_time() - self.get_start_time()
         
-    def get_position_at(self, t):
+    def get_row_at(self, t, method='nearest'):
         try:
-            return self.df.loc[t].geometry[0]
+            return self.df.loc[t]
         except:
-            #return self.df.iloc[self.df.index.get_loc(t, method='nearest')]['geometry']
-            return self.df.iloc[self.df.index.sort_values().drop_duplicates().get_loc(t, method='nearest')].geometry       
+            return self.df.iloc[self.df.index.sort_values().drop_duplicates().get_loc(t, method=method)]       
+        
+    def get_position_at(self, t, method='nearest'):
+        row = self.get_row_at(t, method)
+        try:
+            return row.geometry[0]
+        except:
+            return row.geometry     
         
     def get_linestring_between(self, t1, t2):
         try:
@@ -99,8 +105,9 @@ class Trajectory():
             raise RuntimeError("Cannot generate linestring between {0} and {1}".format(t1, t2))
         
     def get_segment_between(self, t1, t2):
-        if t1 < self.get_start_time():
-            raise ValueError("First time parameter has to be equal or later than trajectory start time!")
+        #start_time = self.get_start_time()
+        #if t1 < self.get_start_time():
+        #    raise ValueError("First time parameter ({}) has to be equal or later than trajectory start time ({})!".format(t1, start_time))
         segment = Trajectory(self.id, self.df[t1:t2])
         if not segment.is_valid():
             raise RuntimeError("Failed to extract valid trajectory segment between {} and {}".format(t1, t2))

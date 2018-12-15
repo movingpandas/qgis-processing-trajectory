@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    testTrajectoryPredictor.py
+    test_trajectory_predictor.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser

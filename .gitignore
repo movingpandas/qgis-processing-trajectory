@@ -109,3 +109,5 @@ venv.bak/
 .idea/processing_edgebundling.iml
 .idea/workspace.xml
 .settings/org.eclipse.core.resources.prefs
+*.gpkg-shm
+*.gpkg-wal

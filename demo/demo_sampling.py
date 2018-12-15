@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    demo_spatial_intersections.py
+    demo_sampling.py
     ---------------------
     Date                 : December 2018
     Copyright            : (C) 2018 by Anita Graser
@@ -28,6 +28,7 @@ script_path = os.path.dirname(__file__)
 sys.path.append(os.path.join(script_path,".."))
 
 from trajectory import Trajectory 
+from trajectory_sampler import TrajectorySampler
 
 
 if __name__ == '__main__':       
@@ -45,8 +46,21 @@ if __name__ == '__main__':
             for intersection in traj.intersection(feature):
                 intersections.append(intersection)
         
+    samples = []
     for intersection in intersections:
-        print(intersection)
+        sampler = TrajectorySampler(intersection)
+        try:
+            sample = sampler.get_sample(timedelta(minutes=1),timedelta(minutes=1),timedelta(seconds=5),1)
+            samples.append(sample)
+        except RuntimeError as e:
+            print(e)
+    
+    output = open(os.path.join(script_path,'sampling_output.csv'),'w')
+    for sample in samples:
+        output.write(str(sample))
+        output.write('\n')
+    output.close()
+        
         
     polygon_file.close()
     
