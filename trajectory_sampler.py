@@ -18,6 +18,7 @@
 """
 
 import warnings
+import random
 from pandas import NaT
 from datetime import timedelta
 
@@ -68,19 +69,12 @@ class TrajectorySampler():
             else:
                 sample_times.append(row['t'])    
         return sample_times
-    
-    def get_sample(self, past_timedelta, future_timedelta, min_meters_per_sec = 0.3):
-        if not self.is_sampling_possible(past_timedelta, future_timedelta, min_meters_per_sec):
-            raise RuntimeError("Cannot extract sample from this trajectory!")
         
-        above_speed_limit = self.traj.df[self.traj.df['next_ms'] > min_meters_per_sec]
-        first_move_time = above_speed_limit.index.min().to_pydatetime()
-        above_speed_limit.iat[0, above_speed_limit.columns.get_loc("delta_t")] = timedelta(seconds=0)
-        
-        successful = False
-        delta_t = timedelta(seconds=0)
-        
-        for key, row in above_speed_limit.iterrows():
+    def get_sample_times(self, df, delta_t, first_move_time, past_timedelta, future_timedelta, randomize):
+        for t, row in df.iterrows():
+            if randomize:
+                if t < first_move_time + delta_t:
+                    continue
             delta_t += row['delta_t']
             #print(delta_t)
             start_time = self.traj.get_row_at(first_move_time + past_timedelta + delta_t)['t']
@@ -92,17 +86,42 @@ class TrajectorySampler():
                 #print('OK')
                 start_time, past_time, future_time = x     
                 successful = True
-                break                           
-            
-        if not successful:
-            #print(self.traj.df)
-            raise RuntimeError("Failed to extract sample!") 
+                return successful, start_time, past_time, future_time, start_timedelta
+              
+    def get_sample(self, past_timedelta, future_timedelta, min_meters_per_sec = 0.3, randomize = False):
+        number_of_retries = 3
+        if not self.is_sampling_possible(past_timedelta, future_timedelta, min_meters_per_sec):
+            raise RuntimeError("Cannot extract sample from this trajectory!")
         
+        above_speed_limit = self.traj.df[self.traj.df['next_ms'] > min_meters_per_sec]
+        first_move_time = above_speed_limit.index.min().to_pydatetime()
+        
+        df = self.traj.df[self.traj.df.index >= first_move_time]
+        df.iat[0, df.columns.get_loc("delta_t")] = timedelta(seconds=0)
+        
+        successful = False
+        if randomize:
+            while not successful and number_of_retries > 0:
+                random_start = random.randint(0, int((self.traj.get_duration()-future_timedelta).total_seconds()))
+                delta_t = timedelta(seconds=random_start)
+                sample_times = self.get_sample_times(df, delta_t, first_move_time, past_timedelta, future_timedelta, randomize)
+                if sample_times:
+                    successful, start_time, past_time, future_time, start_timedelta = sample_times
+                number_of_retries -= 1
+        else:
+            delta_t = timedelta(seconds=0)
+            sample_times = self.get_sample_times(df, delta_t, first_move_time, past_timedelta, future_timedelta, randomize)
+            if sample_times:
+                successful, start_time, past_time, future_time, start_timedelta = sample_times
+             
+        if not successful:
+            raise RuntimeError("Failed to extract sample from trajectory {}!".format(self.traj.id))
+             
         future_pos = self.traj.get_position_at(future_time)
         
         past_traj = self.traj.get_segment_between(past_time, start_time)
-        if not past_traj:
-            raise RuntimeError("Failed to extract past trajectory!")
+        #if not past_traj:
+        #    raise RuntimeError("Failed to extract past trajectory!")
 
         sample_id = "{}_{}".format(self.traj.id, self.sample_counter)
         self.sample_counter += 1
