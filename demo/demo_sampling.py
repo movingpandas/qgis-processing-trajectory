@@ -48,9 +48,9 @@ if __name__ == '__main__':
         
     samples = []
     for intersection in intersections:
-        sampler = TrajectorySampler(intersection)
+        sampler = TrajectorySampler(intersection, timedelta(seconds=10))
         try:
-            sample = sampler.get_sample(timedelta(minutes=1),timedelta(minutes=1),timedelta(seconds=5),1)
+            sample = sampler.get_sample(timedelta(minutes=1),timedelta(minutes=1),1)
             samples.append(sample)
         except RuntimeError as e:
             print(e)

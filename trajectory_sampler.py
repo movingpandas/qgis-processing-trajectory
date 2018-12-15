@@ -42,8 +42,8 @@ class TrajectorySampler():
         self.sample_counter = 0
         self.tolerance = tolerance 
         
-    def is_sampling_possible(self, past_timedelta, future_timedelta, buffer_timedelta = timedelta(seconds=0), min_meters_per_sec = 0.3):
-        sample_duration = past_timedelta + future_timedelta + buffer_timedelta
+    def is_sampling_possible(self, past_timedelta, future_timedelta, min_meters_per_sec = 0.3):
+        sample_duration = past_timedelta + future_timedelta 
         if self.traj.get_duration() < sample_duration:
             raise RuntimeError("Trajectory {} is too short to extract sample of {} seconds!".format(
                 self.traj.id, sample_duration.total_seconds()))
@@ -60,13 +60,14 @@ class TrajectorySampler():
         
     def is_sampling_successful(self, start_time, past_time, future_time):
         for t in [start_time, past_time, future_time]:
+            #print("Testing {}".format(t))
             row = self.traj.get_row_at(t)
             if abs(row['t'] - t) > self.tolerance: 
                 return False    
         return True    
     
-    def get_sample(self, past_timedelta, future_timedelta, buffer_timedelta = timedelta(seconds=0), min_meters_per_sec = 0.3):
-        if not self.is_sampling_possible(past_timedelta, future_timedelta, buffer_timedelta, min_meters_per_sec):
+    def get_sample(self, past_timedelta, future_timedelta, min_meters_per_sec = 0.3):
+        if not self.is_sampling_possible(past_timedelta, future_timedelta, min_meters_per_sec):
             raise RuntimeError("Cannot extract sample from this trajectory!")
         
         above_speed_limit = self.traj.df[self.traj.df['next_ms'] > min_meters_per_sec]
@@ -78,15 +79,18 @@ class TrajectorySampler():
         
         for key, row in above_speed_limit.iterrows():
             delta_t += row['delta_t']
+            #print(delta_t)
             start_time = self.traj.get_row_at(first_move_time + past_timedelta + delta_t)['t']
             start_timedelta = start_time - first_move_time
             past_time = start_time - past_timedelta
             future_time = start_time + future_timedelta   
             if self.is_sampling_successful(start_time, past_time, future_time):
+                #print('OK')
                 successful = True
                 break                           
             
         if not successful:
+            #print(self.traj.df)
             raise RuntimeError("Failed to extract sample!") 
         
         future_pos = self.traj.get_position_at(future_time)
