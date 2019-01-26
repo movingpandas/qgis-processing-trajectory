@@ -2,10 +2,10 @@
 
 """
 ***************************************************************************
-    addMetersPerSecAlgorithm.py
+    splitOnDayBreakAlgorithm.py
     ---------------------
-    Date                 : December 2018
-    Copyright            : (C) 2018 by Anita Graser
+    Date                 : January 2019
+    Copyright            : (C) 2019 by Anita Graser
     Email                : anitagraser@gmx.at
 ***************************************************************************
 *                                                                         *
@@ -54,7 +54,7 @@ from .qgisUtils import trajectories_from_qgis_point_layer
 pluginPath = os.path.dirname(__file__)
 
 
-class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
+class SplitOnDayBreakAlgorithm(QgsProcessingAlgorithm):
     # script parameters
     INPUT = 'INPUT'
     TRAJ_ID_FIELD = 'OBJECT_ID_FIELD'
@@ -66,16 +66,16 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
         super().__init__()
 
     def name(self):
-        return "add_meters_per_sec"
+        return "split_on_day_break"
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
 
     def tr(self, text):
-        return QCoreApplication.translate("add_meters_per_sec", text)
+        return QCoreApplication.translate("split_on_day_break", text)
 
     def displayName(self):
-        return self.tr("Add speed (m/s) to points")
+        return self.tr("Day trajectories from point layer")
 
     def group(self):
         return self.tr("Basic")
@@ -85,9 +85,7 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
 
     def shortHelpString(self):
         return self.tr(
-            "<p>If the input layer CRS is EPSG:4326, distances are computed using spherical " + 
-            "equations. If the layer CRS unit miles, the resulting speed values will be " + 
-            "miles per second but the attribute name is currently hard-coded to meters_per_sec.</p>")
+            "<p>Splits trajectories at midnight.</p>")
 
     def helpUrl(self):
         return "https://github.com/anitagraser/processing-trajectory"
@@ -127,38 +125,32 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(
             name=self.OUTPUT,
             description=self.tr("Trajectories"),
-            type=QgsProcessing.TypeVectorPoint))
+            type=QgsProcessing.TypeVectorLine))
 
     def processAlgorithm(self, parameters, context, feedback):
         input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         traj_id_field = self.parameterAsFields(parameters, self.TRAJ_ID_FIELD, context)[0]
         timestamp_field = self.parameterAsFields(parameters, self.TIMESTAMP_FIELD, context)[0]
         timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
-        
-        fields = input_layer.fields()
-        output_fields = fields
-        output_fields.append(QgsField('meters_per_sec', QVariant.Double))
-        
+
+        output_fields = QgsFields()
+        output_fields.append(QgsField(traj_id_field, QVariant.String))
+        output_fields.append(QgsField('date', QVariant.DateTime))
+
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
-                                               output_fields, 
-                                               QgsWkbTypes.Point, 
+                                               output_fields,
+                                               QgsWkbTypes.LineString,
                                                input_layer.sourceCrs())
         
         trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
         
         for traj in trajectories:
-            traj.add_meters_per_sec()
-            for index, row in traj.df.iterrows():
-                pt = QgsGeometry.fromWkt(row['geometry'].wkt)
+            splitting_results = traj.split()
+            for split_traj in splitting_results:
+                line = QgsGeometry.fromWkt(split_traj.to_linestringm_wkt())
                 f = QgsFeature()
-                f.setGeometry(pt)
-                attributes = []
-                for field in fields:
-                    if field.name() == timestamp_field:
-                        attributes.append(str(index))
-                    else:
-                        attributes.append(row[field.name()])
-                f.setAttributes(attributes)
+                f.setGeometry(line)
+                f.setAttributes([split_traj.id, str(split_traj.get_start_time().date())])
                 sink.addFeature(f, QgsFeatureSink.FastInsert)
         
         # default return type for function

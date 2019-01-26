@@ -31,6 +31,7 @@ from .trajectoriesFromPointLayerAlgorithm import TrajectoriesFromPointLayerAlgor
 from .clipTrajectoriesByExtentAlgorithm import ClipTrajectoriesByExtentAlgorithm
 from .addHeadingAlgorithm import AddHeadingAlgorithm
 from .addMetersPerSecAlgorithm import AddMetersPerSecAlgorithm
+from .splitOnDayBreakAlgorithm import SplitOnDayBreakAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -67,7 +68,8 @@ class TrajectoryProvider(QgsProcessingProvider):
         algs = [TrajectoriesFromPointLayerAlgorithm(),
                 ClipTrajectoriesByExtentAlgorithm(),
                 AddHeadingAlgorithm(),
-                AddMetersPerSecAlgorithm()]
+                AddMetersPerSecAlgorithm(),
+                SplitOnDayBreakAlgorithm()]
         return algs
 
     def loadAlgorithms(self):

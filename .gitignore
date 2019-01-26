@@ -111,3 +111,4 @@ venv.bak/
 .settings/org.eclipse.core.resources.prefs
 *.gpkg-shm
 *.gpkg-wal
+.idea/vcs.xml

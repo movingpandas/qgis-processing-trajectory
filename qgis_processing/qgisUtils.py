@@ -21,6 +21,7 @@ import sys
 import pandas as pd 
 import numpy as np
 from geopandas import GeoDataFrame
+from PyQt5 import QtCore
 from shapely.geometry import Point, LineString, Polygon
 from shapely.affinity import translate
 from datetime import datetime, timedelta
@@ -37,7 +38,10 @@ def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_fie
         my_dict = {}
         for i, a in enumerate(feature.attributes()):
             if names[i] == time_field_name:
-                my_dict[names[i]] = datetime.strptime(a, time_format)
+                if type(a) == QtCore.QDateTime:
+                    my_dict[names[i]] = a.toPyDateTime()
+                else:
+                    my_dict[names[i]] = datetime.strptime(a, time_format)
             else:
                 my_dict[names[i]] = a
         x = feature.geometry().asPoint().x()
