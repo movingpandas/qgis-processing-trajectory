@@ -2,6 +2,9 @@
 
 The Trajectools plugin adds trajectory tools to the QGIS Processing toolbox. 
 
+![Trajectools screenshot](https://raw.githubusercontent.com/anitagraser/qgis-processing-trajectory/master/screenshots/trajectools.PNG)
+
+
 **Note: This plugin depends on GeoPandas!**
 
 If you are on Windows, here's how to install GeoPandas for OSGeo4W:
