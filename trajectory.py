@@ -38,14 +38,22 @@ def to_unixtime(t):
 
 class Trajectory():
     def __init__(self, id, df):
+        if len(df) < 2:
+            raise ValueError("Trajectory dataframe must have at least two rows!")
+
         self.id = id
-        self.df = df
+        df.sort_index(inplace=True)
+        self.df = df[~df.index.duplicated(keep='first')]
         self.crs = df.crs['init']
         
     def __str__(self):
+        try:
+            line = self.to_linestring()
+        except RuntimeError:
+            return "Invalid trajectory!"
         return "Trajectory {1} ({2} to {3}) | Size: {0}\n{4}".format(
             self.df.geometry.count(), self.id, self.get_start_time(), 
-            self.get_end_time(), self.to_linestring().wkt)
+            self.get_end_time(), line.wkt)
 
     def set_crs(self, crs):
         self.crs = crs            
@@ -61,7 +69,7 @@ class Trajectory():
         return self.make_line(self.df)
     
     def to_linestringm_wkt(self):
-        # Shapely only supports x, y, z. Therfore, this is a bit hacky!
+        # Shapely only supports x, y, z. Therefore, this is a bit hacky!
         coords = ''
         for index, row in self.df.iterrows():
             pt = row.geometry
