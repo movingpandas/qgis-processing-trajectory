@@ -3,7 +3,7 @@ name=Trajectools
 description=Processing tools for handling trajectory data 
 about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on GeoPandas! Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
-version=1.0.1
+version=1.0.2
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.0
 
@@ -20,5 +20,7 @@ repository=https://github.com/anitagraser/qgis-processing-trajectory
 experimental=True
 deprecated=False
 
-changelog=1.0.1
+changelog=1.0.2
+    - Fix #8 Trajectories from point layer: not ordered by time
+1.0.1
     - Fix repository link in metadata
