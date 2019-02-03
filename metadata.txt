@@ -1,7 +1,7 @@
 [general]
 name=Trajectools
 description=Processing tools for handling trajectory data 
-about=Trajectools provides a collection of tools for handling trajectory data. Sample data for testing the functionality is provided with the plugin download. 
+about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on GeoPandas! Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
 version=1.0.1
 qgisMinimumVersion=3.0
