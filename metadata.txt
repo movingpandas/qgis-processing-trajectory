@@ -22,5 +22,5 @@ deprecated=False
 
 changelog=1.0.2
     - Fix #8 Trajectories from point layer: not ordered by time
-1.0.1
+    1.0.1
     - Fix repository link in metadata
