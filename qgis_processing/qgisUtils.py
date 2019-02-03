@@ -49,6 +49,7 @@ def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_fie
         my_dict['geometry']=Point((x,y))
         data.append(my_dict)
     df = pd.DataFrame(data).set_index(time_field_name)
+    df.sort_index(inplace=True)
     crs = {'init': layer.sourceCrs().geographicCrsAuthId().split(':')[1]} 
     geo_df = GeoDataFrame(df, crs=crs)
     #print(geo_df)
