@@ -3,7 +3,7 @@ name=Trajectools
 description=Processing tools for handling trajectory data 
 about=Trajectools provides a collection of tools for handling trajectory data. Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
-version=1.0
+version=1.0.1
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.0
 
@@ -13,9 +13,12 @@ tags=trajectories, movement
 author=Anita Graser
 email=anitagraser@gmx.at
 
-homepage=https://github.com/anitagraser/processing-trajectory
-tracker=https://github.com/anitagraser/processing-trajectory/issues
-repository=https://github.com/anitagraser/processing-trajectory
+homepage=https://github.com/anitagraser/qgis-processing-trajectory
+tracker=https://github.com/anitagraser/qgis-processing-trajectory/issues
+repository=https://github.com/anitagraser/qgis-processing-trajectory
 
 experimental=True
 deprecated=False
+
+changelog=1.0.1
+    - Fix repository link in metadata
