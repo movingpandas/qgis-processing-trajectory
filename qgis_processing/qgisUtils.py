@@ -18,13 +18,12 @@
 """
 
 import sys 
-import pandas as pd 
-import numpy as np
+import pandas as pd
 from geopandas import GeoDataFrame
 from PyQt5 import QtCore
-from shapely.geometry import Point, LineString, Polygon
-from shapely.affinity import translate
-from datetime import datetime, timedelta
+from shapely.geometry import Point
+from datetime import datetime
+from pyproj import CRS
 
 sys.path.append("..")
 
@@ -46,12 +45,11 @@ def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_fie
                 my_dict[names[i]] = a
         x = feature.geometry().asPoint().x()
         y = feature.geometry().asPoint().y()
-        my_dict['geometry']=Point((x,y))
+        my_dict['geometry'] = Point((x, y))
         data.append(my_dict)
     df = pd.DataFrame(data).set_index(time_field_name)
-    crs = {'init': layer.sourceCrs().geographicCrsAuthId().split(':')[1]} 
+    crs = CRS(int(layer.sourceCrs().geographicCrsAuthId().split(':')[1]))
     geo_df = GeoDataFrame(df, crs=crs)
-    #print(geo_df)
     df_by_id = dict(tuple(geo_df.groupby(trajectory_id_field)))
     trajectories = []
     for key, value in df_by_id.items():

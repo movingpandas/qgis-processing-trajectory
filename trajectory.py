@@ -44,7 +44,7 @@ class Trajectory():
         self.id = id
         df.sort_index(inplace=True)
         self.df = df[~df.index.duplicated(keep='first')]
-        self.crs = df.crs['init']
+        self.crs = df.crs
         
     def __str__(self):
         try:
