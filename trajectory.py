@@ -177,6 +177,8 @@ class Trajectory():
         if mode == 'daybreak':
             dfs = [group[1] for group in self.df.groupby(self.df.index.date)]
             for i, df in enumerate(dfs):
+                if len(df) < 2:
+                    continue
                 result.append(Trajectory('{}_{}'.format(self.id, i), df))
         else:
             raise ValueError('Invalid split mode {}. Must be one of [daybreak]'.format(mode))

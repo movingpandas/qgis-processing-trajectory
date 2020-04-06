@@ -53,6 +53,8 @@ def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_fie
     df_by_id = dict(tuple(geo_df.groupby(trajectory_id_field)))
     trajectories = []
     for key, value in df_by_id.items():
+        if len(value) < 2:
+            continue
         traj = Trajectory(key, value)
         trajectories.append(traj)
     return trajectories
