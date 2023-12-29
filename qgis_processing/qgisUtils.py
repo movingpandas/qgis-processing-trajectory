@@ -27,34 +27,49 @@ from pyproj import CRS
 
 sys.path.append("..")
 
-from processing_trajectory.trajectory import Trajectory
+from movingpandas import TrajectoryCollection
+from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsFeatureSink
 
 
 def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_field, time_format):
+    # TODO: remove
+    return tc_from_pt_layer(layer, time_field_name, trajectory_id_field, time_format)
+
+
+def tc_from_pt_layer(layer, time_field_name, trajectory_id_field, time_format):
     names = [field.name() for field in layer.fields()]
     data = []
     for feature in layer.getFeatures():
         my_dict = {}
         for i, a in enumerate(feature.attributes()):
-            if names[i] == time_field_name:
-                if type(a) == QtCore.QDateTime:
-                    my_dict[names[i]] = a.toPyDateTime()
-                else:
-                    my_dict[names[i]] = datetime.strptime(a, time_format)
-            else:
-                my_dict[names[i]] = a
-        x = feature.geometry().asPoint().x()
-        y = feature.geometry().asPoint().y()
-        my_dict['geometry'] = Point((x, y))
+            my_dict[names[i]] = a
+        pt = feature.geometry().asPoint()
+        my_dict['geom_x'] = pt.x()
+        my_dict['geom_y'] = pt.y()
         data.append(my_dict)
-    df = pd.DataFrame(data).set_index(time_field_name)
+    df = pd.DataFrame(data)  
     crs = CRS(int(layer.sourceCrs().geographicCrsAuthId().split(':')[1]))
-    geo_df = GeoDataFrame(df, crs=crs)
-    df_by_id = dict(tuple(geo_df.groupby(trajectory_id_field)))
-    trajectories = []
-    for key, value in df_by_id.items():
-        if len(value) < 2:
-            continue
-        traj = Trajectory(key, value)
-        trajectories.append(traj)
-    return trajectories
+    tc = TrajectoryCollection(
+         df, traj_id_col=trajectory_id_field, 
+         x='geom_x', y='geom_y', t=time_field_name, crs=crs)
+    return tc
+
+
+def feature_from_gdf_row(row):
+    f = QgsFeature()
+    f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(row.geometry.x, row.geometry.y)))
+    f.setAttributes(row.values.tolist()[:-1])
+    return f
+
+
+def tc_to_sink(tc, sink, output_fields, timestamp_field):
+    gdf = tc.to_point_gdf()
+    gdf[timestamp_field] = gdf.index.astype(str)
+    names = [fields.name() for fields in output_fields]
+    names.append('geometry')
+    gdf = gdf[names]
+
+    for _, row in gdf.iterrows():
+        f = feature_from_gdf_row(row)
+        sink.addFeature(f, QgsFeatureSink.FastInsert)
+        
