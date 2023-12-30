@@ -3,7 +3,7 @@ from qgis.core import QgsGeometry, QgsVectorLayer
 
 sys.path.append("..")
 
-from qgis_processing.qgisUtils import trajectories_from_qgis_point_layer
+from qgis_processing.qgisUtils import tc_from_pt_layer
 
 
 TESTDATA = "./sample_data/geolife.gpkg"
@@ -20,9 +20,9 @@ def test_dataset_availability():
     vl = QgsVectorLayer(TESTDATA, "test data")
     assert vl.isValid()
 
-def test_trajectories_from_qgis_point_layer():
+def test_tc_from_pt_layer():
     vl = QgsVectorLayer(TESTDATA, "test data")
-    tc = trajectories_from_qgis_point_layer(vl, TIME_COL, ID_COL, TIME_FORMAT)
+    tc = tc_from_pt_layer(vl, TIME_COL, ID_COL, TIME_FORMAT)
     print(tc)
     assert len(tc)==5
 

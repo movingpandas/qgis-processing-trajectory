@@ -20,17 +20,8 @@
 import os
 import sys 
 
-import pandas as pd 
-import numpy as np
-from geopandas import GeoDataFrame
-from shapely.geometry import Point, LineString, Polygon
-from shapely.affinity import translate
-from datetime import datetime, timedelta
-
-
 from qgis.PyQt.QtCore import QCoreApplication, QVariant
 from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (QgsField,QgsFields,
                        QgsGeometry,
                        QgsFeature,
@@ -49,8 +40,8 @@ from qgis.core import (QgsField,QgsFields,
                       )
 
 sys.path.append("..")
-from processing_trajectory.trajectory import Trajectory
-from .qgisUtils import trajectories_from_qgis_point_layer
+
+from .qgisUtils import tc_from_pt_layer
 
 pluginPath = os.path.dirname(__file__)
 
@@ -144,9 +135,9 @@ class TrajectoriesFromPointLayerAlgorithm(QgsProcessingAlgorithm):
                                                QgsWkbTypes.LineStringM, 
                                                input_layer.sourceCrs())
         
-        trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
+        tc = tc_from_pt_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
         
-        for traj in trajectories:
+        for traj in tc.trajectories:
             line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
             f = QgsFeature()
             f.setGeometry(line)

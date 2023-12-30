@@ -20,16 +20,10 @@
 import os
 import sys 
 
-import pandas as pd 
-import numpy as np
-from geopandas import GeoDataFrame
-from shapely.geometry import Point, LineString, Polygon
-from shapely.affinity import translate
-from datetime import datetime, timedelta
+from shapely.geometry import Polygon
 
 from qgis.PyQt.QtCore import QCoreApplication, QVariant
 from qgis.PyQt.QtGui import QIcon
-
 from qgis.core import (QgsField,QgsFields,
                        QgsGeometry,
                        QgsFeature,
@@ -50,8 +44,7 @@ from qgis.core import (QgsField,QgsFields,
 
 sys.path.append("..")
 
-from processing_trajectory.trajectory import Trajectory
-from .qgisUtils import trajectories_from_qgis_point_layer
+from .qgisUtils import tc_from_pt_layer
 
 pluginPath = os.path.dirname(__file__)
 
@@ -151,20 +144,17 @@ class ClipTrajectoriesByExtentAlgorithm(QgsProcessingAlgorithm):
                                                QgsWkbTypes.LineStringM, 
                                                input_layer.sourceCrs())
         
-        trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
-        
+        tc = tc_from_pt_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
+
         xmin = extent.xMinimum()
         xmax = extent.xMaximum()
         ymin = extent.yMinimum()
         ymax = extent.yMaximum()
         polygon = Polygon([(xmin,ymin), (xmin,ymax), (xmax,ymax), (xmax,ymin), (xmin,ymin)])
         
-        intersections = []
-        for traj in trajectories:
-            for intersection in traj.intersection(polygon):
-                intersections.append(intersection)
+        tc = tc.clip(polygon)
             
-        for traj in intersections:
+        for traj in tc.trajectories:
             line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
             f = QgsFeature()
             f.setGeometry(line)

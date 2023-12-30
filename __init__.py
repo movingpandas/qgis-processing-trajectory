@@ -4,8 +4,8 @@
 ***************************************************************************
     trajectoryProviderPlugin.py
     ---------------------
-    Date                 : December 2018
-    Copyright            : (C) 2018 by Anita Graser
+    Date                 : December 2023
+    Copyright            : (C) 2023 by Anita Graser
     Email                : anitagraser@gmx.at
 ***************************************************************************
 *                                                                         *
@@ -18,8 +18,8 @@
 """
 
 __author__ = 'Anita Graser'
-__date__ = 'Dec 2018'
-__copyright__ = '(C) 2018, Anita Graser'
+__date__ = 'Dec 2023'
+__copyright__ = '(C) 2023, Anita Graser'
 
 # This will get replaced with a git SHA1 when you do a git archive
 

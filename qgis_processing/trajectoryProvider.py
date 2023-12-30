@@ -69,7 +69,8 @@ class TrajectoryProvider(QgsProcessingProvider):
                 ClipTrajectoriesByExtentAlgorithm(),
                 AddHeadingAlgorithm(),
                 AddMetersPerSecAlgorithm(),
-                SplitOnDayBreakAlgorithm()]
+                SplitOnDayBreakAlgorithm()
+                ]
         return algs
 
     def loadAlgorithms(self):
