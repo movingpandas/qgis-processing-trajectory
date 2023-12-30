@@ -19,17 +19,11 @@
 
 import os
 import sys 
-import pandas as pd 
-import numpy as np
-from geopandas import GeoDataFrame
-from shapely.geometry import Point, LineString, Polygon
-from shapely.affinity import translate
-from datetime import datetime, timedelta
 
 from qgis.PyQt.QtCore import QCoreApplication, QVariant
 from qgis.PyQt.QtGui import QIcon
 
-from qgis.core import (QgsField,QgsFields,
+from qgis.core import (QgsField, QgsFields, QgsPointXY, 
                        QgsGeometry,
                        QgsFeature,
                        QgsFeatureSink,
@@ -48,8 +42,7 @@ from qgis.core import (QgsField,QgsFields,
 
 sys.path.append("..")
 
-from processing_trajectory.trajectory import Trajectory
-from .qgisUtils import trajectories_from_qgis_point_layer
+from .qgisUtils import tc_from_pt_layer, tc_to_sink
 
 pluginPath = os.path.dirname(__file__)
 
@@ -129,37 +122,31 @@ class AddMetersPerSecAlgorithm(QgsProcessingAlgorithm):
             description=self.tr("Trajectories"),
             type=QgsProcessing.TypeVectorPoint))
 
+
+
     def processAlgorithm(self, parameters, context, feedback):
         input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         traj_id_field = self.parameterAsFields(parameters, self.TRAJ_ID_FIELD, context)[0]
         timestamp_field = self.parameterAsFields(parameters, self.TIMESTAMP_FIELD, context)[0]
         timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
         
-        fields = input_layer.fields()
-        output_fields = fields
-        output_fields.append(QgsField('meters_per_sec', QVariant.Double))
+        tc = tc_from_pt_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
+        tc.add_speed(units=("m","s"))
+
+        output_fields = input_layer.fields()
+        output_fields.append(QgsField(tc.get_speed_col(), QVariant.Double))
+        i = output_fields.indexFromName("fid")
+        if i >= 0: 
+            output_fields.remove(i)
         
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                output_fields, 
                                                QgsWkbTypes.Point, 
                                                input_layer.sourceCrs())
-        
-        trajectories = trajectories_from_qgis_point_layer(input_layer, timestamp_field, traj_id_field, timestamp_format)
-        
-        for traj in trajectories:
-            traj.add_meters_per_sec()
-            for index, row in traj.df.iterrows():
-                pt = QgsGeometry.fromWkt(row['geometry'].wkt)
-                f = QgsFeature()
-                f.setGeometry(pt)
-                attributes = []
-                for field in fields:
-                    if field.name() == timestamp_field:
-                        attributes.append(str(index))
-                    else:
-                        attributes.append(row[field.name()])
-                f.setAttributes(attributes)
-                sink.addFeature(f, QgsFeatureSink.FastInsert)
+
+        tc_to_sink(tc, sink, output_fields, timestamp_field)
+    
         
         # default return type for function
         return {self.OUTPUT: dest_id}
+    
