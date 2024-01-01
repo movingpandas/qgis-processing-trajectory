@@ -28,7 +28,8 @@ from pyproj import CRS
 sys.path.append("..")
 
 from movingpandas import TrajectoryCollection
-from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsFeatureSink
+from qgis.core import QgsFeature, QgsGeometry, QgsPointXY, QgsFeatureSink, QgsFields, QgsField
+from qgis.PyQt.QtCore import QVariant
 
 
 def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_field, time_format):
@@ -62,14 +63,38 @@ def feature_from_gdf_row(row):
     return f
 
 
-def tc_to_sink(tc, sink, output_fields, timestamp_field):
+def tc_to_sink(tc, sink, fields, timestamp_field):
     gdf = tc.to_point_gdf()
     gdf[timestamp_field] = gdf.index.astype(str)
-    names = [fields.name() for fields in output_fields]
+    names = [field.name() for field in fields]
     names.append('geometry')
     gdf = gdf[names]
 
     for _, row in gdf.iterrows():
         f = feature_from_gdf_row(row)
         sink.addFeature(f, QgsFeatureSink.FastInsert)
-        
+
+def traj_to_sink(traj, sink):
+    line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
+    f = QgsFeature()
+    f.setGeometry(line)
+    f.setAttributes([traj.id])
+    sink.addFeature(f, QgsFeatureSink.FastInsert)
+
+def get_pt_fields(input_layer, traj_id_field):
+    fields = QgsFields()
+    for field in input_layer.fields():
+        if field.name() == "fid":
+            continue
+        elif field.name() == traj_id_field:  # we need to make sure the ID field is String
+            fields.append(QgsField(traj_id_field, QVariant.String))
+        else: 
+            fields.append(field)
+    return fields
+
+def get_traj_fields(input_layer, traj_id_field):
+    fields = QgsFields()
+    fields.append(QgsField(traj_id_field, QVariant.String))
+    return fields
+
+

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 import sys 
+import pandas as pd
+from datetime import timedelta
+from movingpandas import TemporalSplitter, ObservationGapSplitter
 
 from qgis.PyQt.QtCore import QCoreApplication, QVariant
 from qgis.PyQt.QtGui import QIcon
-
-from qgis.core import (QgsField, QgsFields, QgsPointXY, 
+from qgis.core import (QgsField,QgsFields,
                        QgsGeometry,
                        QgsFeature,
                        QgsFeatureSink,
@@ -19,18 +21,18 @@ from qgis.core import (QgsField, QgsFields, QgsPointXY,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterFeatureSink,
                        QgsProcessingParameterEnum,
-                       QgsWkbTypes,
+                       QgsWkbTypes, 
                        QgsProcessingUtils
                       )
 
 sys.path.append("..")
 
-from .qgisUtils import tc_from_pt_layer, tc_to_sink, get_pt_fields, get_traj_fields
+from .qgisUtils import tc_from_pt_layer, tc_to_sink, traj_to_sink, get_pt_fields, get_traj_fields
 
 pluginPath = os.path.dirname(__file__)
 
 
-class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
+class SplitTrajectoriesAlgorithm(QgsProcessingAlgorithm):
     # script parameters
     INPUT = 'INPUT'
     TRAJ_ID_FIELD = 'OBJECT_ID_FIELD'
@@ -39,22 +41,24 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
     OUTPUT_PTS = 'OUTPUT_PTS'
     OUTPUT_SEGS = 'OUTPUT_SEGS'
     OUTPUT_TRAJS = 'OUTPUT_TRAJS'
-    SPEED_UNIT = 'SPEED_UNIT'
+    SPLIT_MODE = 'SPLIT_MODE'
+    SPLIT_MODE_OPTIONS = ["observation gap", "year", "month", "day", "hour", ]
+    TIME_GAP = 'TIME_GAP'
 
     def __init__(self):
         super().__init__()
 
     def name(self):
-        return "create_trajectory"
+        return "split"
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
 
     def tr(self, text):
-        return QCoreApplication.translate("create_trajectory", text)
+        return QCoreApplication.translate("split", text)
 
     def displayName(self):
-        return self.tr("Create trajectories")
+        return self.tr("Split trajectories")
 
     #def group(self):
     #    return self.tr("Basic")
@@ -64,17 +68,20 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
 
     def shortHelpString(self):
         return self.tr(
-            "<p>Creates a trajectory point layers with speed and direction information " 
-            "as well as a trajectory line layer.</p>"
-            "<p><b>Speed</b> is calculated based on the input layer CRS information and " 
-            "converted to the desired speed units. For more info on the supported units, " 
-            "see https://movingpandas.org/units</p>" 
-            "<p><b>Direction</b> is calculated between consecutive locations. Direction " 
-            "values are in degrees, starting North turning clockwise.</p>"
+            "<p>Splits trajectories into subtrajectories using one of the "
+            "following supported modes: </p>" 
+            "<p><b>Observation gap: </b>" 
+            "splits whenever there is a gap in the observations " 
+            "(for supported time gap formats see: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_timedelta.html)</p>"
+            "<p><b>Temporal (year, month, day, hour): </b>" 
+            "splits using regular time intervals " 
+            "(time gap parameter will be ignored)</p>" 
+            "<p>For more information on trajectory splitters see: " 
+            "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
             )
 
     def helpUrl(self):
-        return "https://movingpandas.org/units"
+        return "https://github.com/movingpandas/processing-trajectory"
 
     def createInstance(self):
         return type(self)()
@@ -107,11 +114,17 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
             description=self.tr("Timestamp format"),
             defaultValue="%Y-%m-%d %H:%M:%S+00",
             optional=False))
-        self.addParameter(QgsProcessingParameterString(
-            name=self.SPEED_UNIT,
-            description=self.tr("Speed units (e.g. km/h, m/s)"),
-            defaultValue="km/h",
+        self.addParameter(QgsProcessingParameterEnum(
+            name=self.SPLIT_MODE,
+            description=self.tr("Splitting mode"),
+            defaultValue="day",
+            options=self.SPLIT_MODE_OPTIONS,
             optional=False))
+        self.addParameter(QgsProcessingParameterString(
+            name=self.TIME_GAP,
+            description=self.tr("Time gap (timedelta, e.g. 1 hours, 15 minutes)"),
+            defaultValue="1 hours",
+            optional=True))
         # output layer
         self.addParameter(QgsProcessingParameterFeatureSink(
             name=self.OUTPUT_PTS,
@@ -126,47 +139,50 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
         self.input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         self.traj_id_field = self.parameterAsFields(parameters, self.TRAJ_ID_FIELD, context)[0]
         self.timestamp_field = self.parameterAsFields(parameters, self.TIMESTAMP_FIELD, context)[0]
+        
         timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
-        speed_units = self.parameterAsString(parameters, self.SPEED_UNIT, context).split("/")
+        split_mode = self.parameterAsInt(parameters, self.SPLIT_MODE, context)
+        split_mode = self.SPLIT_MODE_OPTIONS[split_mode]
+        time_gap = self.parameterAsString(parameters, self.TIME_GAP, context)
+        
+        crs = self.input_layer.sourceCrs()
+
+        self.fields_pts = get_pt_fields(self.input_layer, self.traj_id_field)
+        (self.sink_pts, self.dest_pts) = self.parameterAsSink(
+            parameters, self.OUTPUT_PTS, context, self.fields_pts, QgsWkbTypes.Point, crs)
+
+        self.fields_trajs = get_traj_fields(self.input_layer, self.traj_id_field)
+        (self.sink_trajs, self.dest_trajs) = self.parameterAsSink(
+            parameters, self.OUTPUT_TRAJS, context, self.fields_trajs, QgsWkbTypes.LineStringM, crs)
         
         tc = tc_from_pt_layer(self.input_layer, self.timestamp_field, self.traj_id_field, timestamp_format)
-        tc.add_speed(units=tuple(speed_units), overwrite=True)
-        tc.add_direction(overwrite=True)
 
-        self.dest_pts = self.create_points(parameters, context, tc)
-        self.dest_trajs = self.create_trajectories(parameters, context, tc)        
+        if split_mode == "observation gap":
+            self.split_on_gaps(time_gap, tc)
+        else: 
+            self.split_temporally(split_mode, tc)     
 
         return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
-    
+
     def postProcessAlgorithm(self, context, feedback):
         processed_layer = QgsProcessingUtils.mapLayerFromString(self.dest_pts, context)
         processed_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "pts.qml"))
         return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
 
-    def create_points(self, parameters, context, tc):
-        fields_pts = get_pt_fields(self.input_layer, self.traj_id_field)
-        fields_pts.append(QgsField(tc.get_speed_col(), QVariant.Double))
-        fields_pts.append(QgsField(tc.get_direction_col(), QVariant.Double))
-        crs = self.input_layer.sourceCrs()
-
-        (sink, dest) = self.parameterAsSink(
-            parameters, self.OUTPUT_PTS, context, fields_pts, QgsWkbTypes.Point, crs)
-
-        tc_to_sink(tc, sink, fields_pts, self.timestamp_field)
-        return dest
-
-    def create_trajectories(self, parameters, context, tc):
-        output_fields_lines = get_traj_fields(self.input_layer, self.traj_id_field)
-        crs = self.input_layer.sourceCrs()
-
-        (sink, dest) = self.parameterAsSink(
-            parameters, self.OUTPUT_TRAJS, context, output_fields_lines, QgsWkbTypes.LineStringM, crs)
-
+    def split_on_gaps(self, time_gap, tc):
+        time_gap = pd.Timedelta(time_gap).to_pytimedelta()
         for traj in tc.trajectories:
-            line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
-            f = QgsFeature()
-            f.setGeometry(line)
-            f.setAttributes([traj.id])
-            sink.addFeature(f, QgsFeatureSink.FastInsert)
-        return dest
-    
+            splits = ObservationGapSplitter(traj).split(gap=time_gap)
+            tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
+            for split in splits:
+                traj_to_sink(split, self.sink_trajs)
+
+    def split_temporally(self, split_mode, tc):
+        for traj in tc.trajectories:
+            splits = TemporalSplitter(traj).split(mode=split_mode)
+            tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
+            for split in splits:
+                traj_to_sink(split, self.sink_trajs)
+
+
+

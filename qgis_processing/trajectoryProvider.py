@@ -27,11 +27,8 @@ from processing.core.ProcessingConfig import ProcessingConfig, Setting
 
 sys.path.append("..")
 
-from .trajectoriesFromPointLayerAlgorithm import TrajectoriesFromPointLayerAlgorithm
-from .clipTrajectoriesByExtentAlgorithm import ClipTrajectoriesByExtentAlgorithm
-from .addHeadingAlgorithm import AddHeadingAlgorithm
 from .createTrajectoriesAlgorithm import CreateTrajectoriesAlgorithm
-from .splitOnDayBreakAlgorithm import SplitOnDayBreakAlgorithm
+from .splitTrajectoriesAlgorithm import SplitTrajectoriesAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -66,6 +63,7 @@ class TrajectoryProvider(QgsProcessingProvider):
 
     def getAlgs(self):
         algs = [CreateTrajectoriesAlgorithm(),
+                SplitTrajectoriesAlgorithm()
                 ]
         return algs
 
