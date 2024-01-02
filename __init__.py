@@ -2,7 +2,7 @@
 
 """
 ***************************************************************************
-    trajectoryProviderPlugin.py
+    trajectoolsProviderPlugin.py
     ---------------------
     Date                 : December 2023
     Copyright            : (C) 2023 by Anita Graser
@@ -25,7 +25,7 @@ __copyright__ = '(C) 2023, Anita Graser'
 
 __revision__ = '$Format:%H$'
 
-from .qgis_processing.trajectoryProviderPlugin import TrajectoryProviderPlugin
+from .qgis_processing.trajectoolsProviderPlugin import TrajectoryProviderPlugin
 
 
 def classFactory(iface):
