@@ -102,11 +102,11 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
             type=QgsProcessingParameterField.Any,
             allowMultiple=False,
             optional=False))
-        self.addParameter(QgsProcessingParameterString(
-            name=self.TIMESTAMP_FORMAT,
-            description=self.tr("Timestamp format"),
-            defaultValue="%Y-%m-%d %H:%M:%S+00",
-            optional=False))
+        # self.addParameter(QgsProcessingParameterString(
+        #     name=self.TIMESTAMP_FORMAT,
+        #     description=self.tr("Timestamp format (e.g. %Y-%m-%d %H:%M:%S)"),
+        #     #defaultValue="%Y-%m-%d %H:%M:%S+00",
+        #     optional=True))
         self.addParameter(QgsProcessingParameterString(
             name=self.SPEED_UNIT,
             description=self.tr("Speed units (e.g. km/h, m/s)"),
@@ -126,10 +126,10 @@ class CreateTrajectoriesAlgorithm(QgsProcessingAlgorithm):
         self.input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         self.traj_id_field = self.parameterAsFields(parameters, self.TRAJ_ID_FIELD, context)[0]
         self.timestamp_field = self.parameterAsFields(parameters, self.TIMESTAMP_FIELD, context)[0]
-        timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
+        #timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
         speed_units = self.parameterAsString(parameters, self.SPEED_UNIT, context).split("/")
         
-        tc = tc_from_pt_layer(self.input_layer, self.timestamp_field, self.traj_id_field, timestamp_format)
+        tc = tc_from_pt_layer(self.input_layer, self.timestamp_field, self.traj_id_field)# , timestamp_format)
         tc.add_speed(units=tuple(speed_units), overwrite=True)
         tc.add_direction(overwrite=True)
 

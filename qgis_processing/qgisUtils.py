@@ -37,7 +37,7 @@ def trajectories_from_qgis_point_layer(layer, time_field_name, trajectory_id_fie
     return tc_from_pt_layer(layer, time_field_name, trajectory_id_field, time_format)
 
 
-def tc_from_pt_layer(layer, time_field_name, trajectory_id_field, time_format):
+def tc_from_pt_layer(layer, time_field_name, trajectory_id_field):
     names = [field.name() for field in layer.fields()]
     data = []
     for feature in layer.getFeatures():
