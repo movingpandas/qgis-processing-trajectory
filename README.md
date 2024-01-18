@@ -9,9 +9,8 @@ The Trajectools plugin adds trajectory tools to the QGIS Processing toolbox.
 
 ```
 (base) conda create -n qgis -c conda-forge python=3.9 
-(base) PS C:\Users\anita> conda activate qgis
-(qgis) PS C:\Users\anita> mamba install -c conda-forge qgis=3.28.2
-(qgis) PS C:\Users\anita> mamba install -c conda-forge movingpandas
+(base) conda activate qgis
+(qgis) mamba install -c conda-forge qgis movingpandas
 ```
 
 More details: https://anitagraser.com/2023/01/21/pyqgis-jupyter-notebooks-on-windows-using-conda/
