@@ -14,6 +14,7 @@ from .splitTrajectoriesAlgorithm import (
     TemporalSplitterAlgorithm,
     StopSplitterAlgorithm
 )
+from .overlayAlgorithm import ClipTrajectoriesByExtentAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -50,7 +51,8 @@ class TrajectoolsProvider(QgsProcessingProvider):
             CreateTrajectoriesAlgorithm(),
             ObservationGapSplitterAlgorithm(),
             TemporalSplitterAlgorithm(),
-            StopSplitterAlgorithm()
+            StopSplitterAlgorithm(),
+            ClipTrajectoriesByExtentAlgorithm()
         ]
         return algs
 

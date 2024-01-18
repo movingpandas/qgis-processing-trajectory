@@ -17,7 +17,6 @@ from .trajectoriesAlgorithm import TrajectoriesAlgorithm
 
 
 class CreateTrajectoriesAlgorithm(TrajectoriesAlgorithm):
-    SPEED_UNIT = "SPEED_UNIT"
 
     def __init__(self):
         super().__init__()
