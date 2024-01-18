@@ -8,7 +8,7 @@ The Trajectools plugin adds trajectory tools to the QGIS Processing toolbox.
 **Note: This plugin depends on MovingPandas!** You will need to install MovingPandas in your QGIS Python environment. I recommend installing both QGIS and MovingPandas from conda-forge:
 
 ```
-(base) conda create -n qgis python=3.9
+(base) conda create -n qgis -c conda-forge python=3.9 
 (base) PS C:\Users\anita> conda activate qgis
 (qgis) PS C:\Users\anita> mamba install -c conda-forge qgis=3.28.2
 (qgis) PS C:\Users\anita> mamba install -c conda-forge movingpandas
