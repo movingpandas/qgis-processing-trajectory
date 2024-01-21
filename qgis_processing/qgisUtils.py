@@ -49,26 +49,3 @@ def feature_from_gdf_row(row):
     f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(row.geometry.x, row.geometry.y)))
     f.setAttributes(row.values.tolist()[:-1])
     return f
-
-
-def tc_to_sink(tc, sink, fields, timestamp_field):
-    try:
-        gdf = tc.to_point_gdf()
-    except ValueError:  # when the tc is empty
-        return
-    gdf[timestamp_field] = gdf.index.astype(str)
-    names = [field.name() for field in fields]
-    names.append("geometry")
-    gdf = gdf[names]
-
-    for _, row in gdf.iterrows():
-        f = feature_from_gdf_row(row)
-        sink.addFeature(f, QgsFeatureSink.FastInsert)
-
-
-def traj_to_sink(traj, sink):
-    line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
-    f = QgsFeature()
-    f.setGeometry(line)
-    f.setAttributes([traj.id])
-    sink.addFeature(f, QgsFeatureSink.FastInsert)

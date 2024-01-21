@@ -11,7 +11,6 @@ from qgis.core import (
 
 sys.path.append("..")
 
-from .qgisUtils import tc_to_sink, traj_to_sink
 from .trajectoriesAlgorithm import TrajectoriesAlgorithm
 
 
@@ -69,9 +68,9 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
         time_gap = pd.Timedelta(time_gap).to_pytimedelta()
         for traj in tc.trajectories:
             splits = ObservationGapSplitter(traj).split(gap=time_gap)
-            tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
+            self.tc_to_sink(splits)
             for split in splits:
-                traj_to_sink(split, self.sink_trajs)
+                self.traj_to_sink(split)
 
 
 class TemporalSplitterAlgorithm(SplitTrajectoriesAlgorithm):
@@ -122,9 +121,9 @@ class TemporalSplitterAlgorithm(SplitTrajectoriesAlgorithm):
         split_mode = self.SPLIT_MODE_OPTIONS[split_mode]
         for traj in tc.trajectories:
             splits = TemporalSplitter(traj).split(mode=split_mode)
-            tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
+            self.tc_to_sink(splits)
             for split in splits:
-                traj_to_sink(split, self.sink_trajs)
+                self.traj_to_sink(split)
 
 
 class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
@@ -181,6 +180,6 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
             splits = StopSplitter(traj).split(
                 max_diameter=max_diameter, min_duration=min_duration
             )
-            tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
+            self.tc_to_sink(splits)
             for split in splits:
-                traj_to_sink(split, self.sink_trajs)
+                self.traj_to_sink(split)

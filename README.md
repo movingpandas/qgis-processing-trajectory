@@ -1,6 +1,6 @@
 # QGIS Processing Trajectools
 
-The Trajectools plugin adds trajectory tools to the QGIS Processing toolbox. 
+The Trajectools plugin adds trajectory analysis algorithms to the QGIS Processing toolbox. 
 
 ![Trajectools screenshot](screenshots/trajectools.PNG)
 ![Trajectools clipping screenshot](screenshots/trajectools2.PNG)

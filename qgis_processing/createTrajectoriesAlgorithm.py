@@ -4,7 +4,6 @@ from qgis.PyQt.QtCore import QCoreApplication
 
 sys.path.append("..")
 
-from .qgisUtils import tc_to_sink, traj_to_sink
 from .trajectoriesAlgorithm import TrajectoriesAlgorithm
 
 
@@ -45,6 +44,6 @@ class CreateTrajectoriesAlgorithm(TrajectoriesAlgorithm):
         return type(self)()
 
     def processTc(self, tc, parameters, context):
-        tc_to_sink(tc, self.sink_pts, self.fields_pts, self.timestamp_field)
+        self.tc_to_sink(tc)
         for traj in tc.trajectories:
-            traj_to_sink(traj, self.sink_trajs)
+            self.traj_to_sink(traj)

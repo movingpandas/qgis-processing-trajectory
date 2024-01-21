@@ -11,7 +11,6 @@ from qgis.core import (
 
 sys.path.append("..")
 
-from .qgisUtils import tc_to_sink, traj_to_sink
 from .trajectoriesAlgorithm import TrajectoriesAlgorithm
 
 
@@ -67,9 +66,9 @@ class ClipTrajectoriesByExtentAlgorithm(OverlayTrajectoriesAlgorithm):
         extent = self.parameterAsExtent(parameters, self.EXTENT, context)
         extent = shapely.wkt.loads(extent.asWktPolygon())
         clipped = tc.clip(extent)
-        tc_to_sink(clipped, self.sink_pts, self.fields_pts, self.timestamp_field)
+        self.tc_to_sink(clipped)
         for traj in clipped:
-            traj_to_sink(traj, self.sink_trajs)
+            self.traj_to_sink(traj)
 
 
 class ClipTrajectoriesByPolygonLayer(OverlayTrajectoriesAlgorithm):
@@ -116,6 +115,6 @@ class ClipTrajectoriesByPolygonLayer(OverlayTrajectoriesAlgorithm):
         for feature in vlayer.getFeatures():
             extent = shapely.wkt.loads(feature.geometry().asWkt())
             clipped = tc.clip(extent)
-            tc_to_sink(clipped, self.sink_pts, self.fields_pts, self.timestamp_field)
+            self.tc_to_sink(clipped)
             for traj in clipped:
-                traj_to_sink(traj, self.sink_trajs)
+                self.traj_to_sink(traj)
