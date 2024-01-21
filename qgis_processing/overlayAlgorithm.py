@@ -18,12 +18,6 @@ from qgis.core import (
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterString,
     QgsProcessingParameterExtent,
-    QgsProcessingParameterField,
-    QgsProcessingParameterNumber,
-    QgsProcessingParameterBoolean,
-    QgsProcessingParameterFeatureSink,
-    QgsProcessingParameterEnum,
-    QgsWkbTypes,
 )
 
 sys.path.append("..")
@@ -56,7 +50,7 @@ class ClipTrajectoriesByExtentAlgorithm(TrajectoriesAlgorithm):
         return self.tr("Clip trajectories by extent")
 
     def group(self):
-        return self.tr("Overlay")
+        return self.tr("Trajectory overlay")
 
     def groupId(self):
         return "TrajectoryOverlay"

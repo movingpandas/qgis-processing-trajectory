@@ -54,6 +54,11 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
             "https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_timedelta.html)</p>"
             "<p>For more information on trajectory splitters see: "
             "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
+            "<p><b>Speed</b> is calculated based on the input layer CRS information and "
+            "converted to the desired speed units. For more info on the supported units, "
+            "see https://movingpandas.org/units</p>"
+            "<p><b>Direction</b> is calculated between consecutive locations. Direction "
+            "values are in degrees, starting North turning clockwise.</p>"
         )
 
     def processTc(self, tc, parameters, context):
@@ -102,6 +107,11 @@ class TemporalSplitterAlgorithm(SplitTrajectoriesAlgorithm):
             "using regular time intervals (year, month, day, hour): </p>"
             "<p>For more information on trajectory splitters see: "
             "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
+            "<p><b>Speed</b> is calculated based on the input layer CRS information and "
+            "converted to the desired speed units. For more info on the supported units, "
+            "see https://movingpandas.org/units</p>"
+            "<p><b>Direction</b> is calculated between consecutive locations. Direction "
+            "values are in degrees, starting North turning clockwise.</p>"
         )
 
     def processTc(self, tc, parameters, context):
@@ -149,10 +159,14 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
 
     def shortHelpString(self):
         return self.tr(
-            "<p>Splits trajectories into subtrajectories "
-            "at stops. </p>"
+            "<p>Splits trajectories into subtrajectories at stops. </p>"
             "<p>For more information on trajectory splitters see: "
             "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
+            "<p><b>Speed</b> is calculated based on the input layer CRS information and "
+            "converted to the desired speed units. For more info on the supported units, "
+            "see https://movingpandas.org/units</p>"
+            "<p><b>Direction</b> is calculated between consecutive locations. Direction "
+            "values are in degrees, starting North turning clockwise.</p>"
         )
 
     def processTc(self, tc, parameters, context):

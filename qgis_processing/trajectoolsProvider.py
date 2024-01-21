@@ -28,7 +28,7 @@ class TrajectoolsProvider(QgsProcessingProvider):
         return "Trajectory"
 
     def name(self):
-        return "Trajectory tools for Processing"
+        return "Trajectory tools"
 
     def icon(self):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
