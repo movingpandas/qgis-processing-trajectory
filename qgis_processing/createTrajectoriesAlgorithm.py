@@ -1,14 +1,6 @@
 import sys
 
-from qgis.PyQt.QtCore import QCoreApplication, QVariant
-from qgis.core import (
-    QgsField,
-    QgsGeometry,
-    QgsFeature,
-    QgsFeatureSink,
-    QgsProcessingParameterString,
-    QgsWkbTypes,
-)
+from qgis.PyQt.QtCore import QCoreApplication
 
 sys.path.append("..")
 
@@ -17,7 +9,6 @@ from .trajectoriesAlgorithm import TrajectoriesAlgorithm
 
 
 class CreateTrajectoriesAlgorithm(TrajectoriesAlgorithm):
-
     def __init__(self):
         super().__init__()
 

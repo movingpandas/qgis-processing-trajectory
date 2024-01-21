@@ -1,9 +1,5 @@
 import sys
 import pandas as pd
-from geopandas import GeoDataFrame
-from PyQt5 import QtCore
-from shapely.geometry import Point
-from datetime import datetime
 from pyproj import CRS
 
 sys.path.append("..")
@@ -14,10 +10,7 @@ from qgis.core import (
     QgsGeometry,
     QgsPointXY,
     QgsFeatureSink,
-    QgsFields,
-    QgsField,
 )
-from qgis.PyQt.QtCore import QVariant
 
 
 def trajectories_from_qgis_point_layer(
@@ -59,7 +52,10 @@ def feature_from_gdf_row(row):
 
 
 def tc_to_sink(tc, sink, fields, timestamp_field):
-    gdf = tc.to_point_gdf()
+    try:
+        gdf = tc.to_point_gdf()
+    except ValueError:  # when the tc is empty
+        return
     gdf[timestamp_field] = gdf.index.astype(str)
     names = [field.name() for field in fields]
     names.append("geometry")

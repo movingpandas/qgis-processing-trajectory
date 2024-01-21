@@ -1,10 +1,13 @@
 import sys
 import pandas as pd
 
-from datetime import timedelta
 from movingpandas import TemporalSplitter, ObservationGapSplitter, StopSplitter
 
-from qgis.core import QgsProcessingParameterString, QgsProcessingParameterEnum, QgsProcessingParameterNumber
+from qgis.core import (
+    QgsProcessingParameterString,
+    QgsProcessingParameterEnum,
+    QgsProcessingParameterNumber,
+)
 
 sys.path.append("..")
 
@@ -124,7 +127,6 @@ class TemporalSplitterAlgorithm(SplitTrajectoriesAlgorithm):
                 traj_to_sink(split, self.sink_trajs)
 
 
-
 class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
     MAX_DIAMETER = "MAX_DIAMETER"
     MIN_DURATION = "MIN_DURATION"
@@ -145,7 +147,9 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
         self.addParameter(
             QgsProcessingParameterString(
                 name=self.MIN_DURATION,
-                description=self.tr("Min stop duration (timedelta, e.g. 1 hours, 15 minutes)"),
+                description=self.tr(
+                    "Min stop duration (timedelta, e.g. 1 hours, 15 minutes)"
+                ),
                 defaultValue="15 minutes",
                 optional=False,
             )
@@ -174,11 +178,9 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
         min_duration = self.parameterAsString(parameters, self.MIN_DURATION, context)
         min_duration = pd.Timedelta(min_duration).to_pytimedelta()
         for traj in tc.trajectories:
-            splits = StopSplitter(traj).split(max_diameter=max_diameter, min_duration=min_duration)
+            splits = StopSplitter(traj).split(
+                max_diameter=max_diameter, min_duration=min_duration
+            )
             tc_to_sink(splits, self.sink_pts, self.fields_pts, self.timestamp_field)
             for split in splits:
                 traj_to_sink(split, self.sink_trajs)
-
-
-                
-   

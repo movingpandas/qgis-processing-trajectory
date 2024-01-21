@@ -13,7 +13,7 @@ from qgis.core import (
     QgsWkbTypes,
     QgsProcessingParameterString,
     QgsField,
-    QgsFields
+    QgsFields,
 )
 
 sys.path.append("..")
@@ -167,7 +167,7 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         for field in self.input_layer.fields():
             if field.name() == "fid":
                 continue
-            elif (field.name() == self.traj_id_field):  
+            elif field.name() == self.traj_id_field:
                 # we need to make sure the ID field is String
                 fields.append(QgsField(self.traj_id_field, QVariant.String))
             else:
