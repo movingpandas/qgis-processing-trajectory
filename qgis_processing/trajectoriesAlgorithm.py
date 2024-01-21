@@ -156,8 +156,10 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         pass  # needs to be implemented by each splitter
 
     def postProcessAlgorithm(self, context, feedback):
-        processed_layer = QgsProcessingUtils.mapLayerFromString(self.dest_pts, context)
-        processed_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "pts.qml"))
+        pts_layer = QgsProcessingUtils.mapLayerFromString(self.dest_pts, context)
+        pts_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "pts.qml"))
+        traj_layer = QgsProcessingUtils.mapLayerFromString(self.dest_trajs, context)
+        traj_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "traj.qml"))
         return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
 
     def get_pt_fields(self, fields_to_add=[]):
