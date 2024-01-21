@@ -112,3 +112,6 @@ venv.bak/
 *.gpkg-shm
 *.gpkg-wal
 .idea/vcs.xml
+
+.vscode/
+.vscode/settings.json
