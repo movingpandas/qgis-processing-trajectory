@@ -106,7 +106,7 @@ class TemporalSplitterAlgorithm(SplitTrajectoriesAlgorithm):
     def shortHelpString(self):
         return self.tr(
             "<p>Splits trajectories into subtrajectories "
-            "using regular time intervals (year, month, day, hour): </p>"
+            "using regular time intervals (year, month, day, hour). </p>"
             "<p>For more information on trajectory splitters see: "
             "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
             "<p><b>Speed</b> is calculated based on the input layer CRS information and "
