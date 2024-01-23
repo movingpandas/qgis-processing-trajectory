@@ -37,8 +37,8 @@ TIME_FACTOR = {
 class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
     # script parameters
     INPUT = "INPUT"
-    TRAJ_ID_FIELD = "OBJECT_ID_FIELD"
-    TIMESTAMP_FIELD = "TIMESTAMP_FIELD"
+    TRAJ_ID_FIELD = "TRAJ_ID_FIELD"
+    TIMESTAMP_FIELD = "TIME_FIELD"
     OUTPUT_PTS = "OUTPUT_PTS"
     OUTPUT_SEGS = "OUTPUT_SEGS"
     OUTPUT_TRAJS = "OUTPUT_TRAJS"
