@@ -56,7 +56,7 @@ class TrajectoolsProvider(QgsProcessingProvider):
             TemporalSplitterAlgorithm(),
             StopSplitterAlgorithm(),
             ClipTrajectoriesByExtentAlgorithm(),
-            ClipTrajectoriesByPolygonLayer(),
+            ClipTrajectoriesByPolygonLayerAlgorithm(),
         ]
         return algs
 
