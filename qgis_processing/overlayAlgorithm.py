@@ -71,7 +71,7 @@ class ClipTrajectoriesByExtentAlgorithm(OverlayTrajectoriesAlgorithm):
             self.traj_to_sink(traj)
 
 
-class ClipTrajectoriesByPolygonLayer(OverlayTrajectoriesAlgorithm):
+class ClipTrajectoriesByPolygonLayerAlgorithm(OverlayTrajectoriesAlgorithm):
     CLIP_LAYER = "CLIP_LAYER"
 
     def __init__(self):
