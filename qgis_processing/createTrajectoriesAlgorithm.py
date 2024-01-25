@@ -4,18 +4,15 @@ from qgis.PyQt.QtCore import QCoreApplication
 
 sys.path.append("..")
 
-from .trajectoriesAlgorithm import TrajectoriesAlgorithm
+from .trajectoriesAlgorithm import TrajectoryManipulationAlgorithm
 
 
-class CreateTrajectoriesAlgorithm(TrajectoriesAlgorithm):
+class CreateTrajectoriesAlgorithm(TrajectoryManipulationAlgorithm):
     def __init__(self):
         super().__init__()
 
     def name(self):
         return "create_trajectory"
-
-    def tr(self, text):
-        return QCoreApplication.translate("create_trajectory", text)
 
     def displayName(self):
         return self.tr("Create trajectories")

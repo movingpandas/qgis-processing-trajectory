@@ -11,10 +11,10 @@ from qgis.core import (
 
 sys.path.append("..")
 
-from .trajectoriesAlgorithm import TrajectoriesAlgorithm
+from .trajectoriesAlgorithm import TrajectoryManipulationAlgorithm
 
 
-class OverlayTrajectoriesAlgorithm(TrajectoriesAlgorithm):
+class OverlayTrajectoriesAlgorithm(TrajectoryManipulationAlgorithm):
     def __init__(self):
         super().__init__()
 
@@ -41,9 +41,6 @@ class ClipTrajectoriesByExtentAlgorithm(OverlayTrajectoriesAlgorithm):
 
     def name(self):
         return "clip_traj_extent"
-
-    def tr(self, text):
-        return QCoreApplication.translate("clip_traj_extent", text)
 
     def displayName(self):
         return self.tr("Clip trajectories by extent")
@@ -89,9 +86,6 @@ class ClipTrajectoriesByPolygonLayer(OverlayTrajectoriesAlgorithm):
 
     def name(self):
         return "clip_traj_vector"
-
-    def tr(self, text):
-        return QCoreApplication.translate("clip_traj_vector", text)
 
     def displayName(self):
         return self.tr("Clip trajectories by polygon layer")

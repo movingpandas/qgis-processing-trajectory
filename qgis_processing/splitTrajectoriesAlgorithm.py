@@ -11,10 +11,10 @@ from qgis.core import (
 
 sys.path.append("..")
 
-from .trajectoriesAlgorithm import TrajectoriesAlgorithm
+from .trajectoriesAlgorithm import TrajectoryManipulationAlgorithm
 
 
-class SplitTrajectoriesAlgorithm(TrajectoriesAlgorithm):
+class SplitTrajectoriesAlgorithm(TrajectoryManipulationAlgorithm):
     def __init__(self):
         super().__init__()
 

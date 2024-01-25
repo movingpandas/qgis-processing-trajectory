@@ -35,13 +35,9 @@ TIME_FACTOR = {
 
 
 class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
-    # script parameters
     INPUT = "INPUT"
     TRAJ_ID_FIELD = "TRAJ_ID_FIELD"
     TIMESTAMP_FIELD = "TIME_FIELD"
-    OUTPUT_PTS = "OUTPUT_PTS"
-    OUTPUT_SEGS = "OUTPUT_SEGS"
-    OUTPUT_TRAJS = "OUTPUT_TRAJS"
     SPEED_UNIT = "SPEED_UNIT"
 
     def __init__(self):
@@ -51,7 +47,7 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
 
     def tr(self, text):
-        return QCoreApplication.translate("split_traj", text)
+        return QCoreApplication.translate("trajectools", text)
 
     def helpUrl(self):
         return "https://github.com/movingpandas/processing-trajectory"
@@ -60,7 +56,6 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         return type(self)()
 
     def initAlgorithm(self, config=None):
-        # input layer
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 name=self.INPUT,
@@ -68,7 +63,6 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
                 types=[QgsProcessing.TypeVectorPoint],
             )
         )
-        # fields
         self.addParameter(
             QgsProcessingParameterField(
                 name=self.TRAJ_ID_FIELD,
@@ -99,23 +93,8 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
                 optional=False,
             )
         )
-        # output layer
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(
-                name=self.OUTPUT_PTS,
-                description=self.tr("Trajectory points"),
-                type=QgsProcessing.TypeVectorPoint,
-            )
-        )
-        self.addParameter(
-            QgsProcessingParameterFeatureSink(
-                name=self.OUTPUT_TRAJS,
-                description=self.tr("Trajectories"),
-                type=QgsProcessing.TypeVectorLine,
-            )
-        )
 
-    def processAlgorithm(self, parameters, context, feedback):
+    def create_tc(self, parameters, context):
         self.input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         self.traj_id_field = self.parameterAsFields(
             parameters, self.TRAJ_ID_FIELD, context
@@ -133,6 +112,49 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         )
         tc.add_speed(units=tuple(self.speed_units), overwrite=True)
         tc.add_direction(overwrite=True)
+        return tc, crs
+
+    def get_pt_fields(self, fields_to_add=[]):
+        fields = QgsFields()
+        for field in self.input_layer.fields():
+            if field.name() == "fid":
+                continue
+            elif field.name() == self.traj_id_field:
+                # we need to make sure the ID field is String
+                fields.append(QgsField(self.traj_id_field, QVariant.String))
+            else:
+                fields.append(field)
+        for field in fields_to_add:
+            i = fields.indexFromName(field.name())
+            if i < 0:
+                fields.append(field)
+        return fields
+
+
+class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
+    OUTPUT_PTS = "OUTPUT_PTS"
+    OUTPUT_SEGS = "OUTPUT_SEGS"
+    OUTPUT_TRAJS = "OUTPUT_TRAJS"
+
+    def initAlgorithm(self, config=None):
+        super().initAlgorithm(config)
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                name=self.OUTPUT_PTS,
+                description=self.tr("Trajectory points"),
+                type=QgsProcessing.TypeVectorPoint,
+            )
+        )
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                name=self.OUTPUT_TRAJS,
+                description=self.tr("Trajectories"),
+                type=QgsProcessing.TypeVectorLine,
+            )
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        tc, crs = self.create_tc(parameters, context)
 
         self.fields_pts = self.get_pt_fields(
             [
@@ -172,22 +194,6 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         traj_layer = QgsProcessingUtils.mapLayerFromString(self.dest_trajs, context)
         traj_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "traj.qml"))
         return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
-
-    def get_pt_fields(self, fields_to_add=[]):
-        fields = QgsFields()
-        for field in self.input_layer.fields():
-            if field.name() == "fid":
-                continue
-            elif field.name() == self.traj_id_field:
-                # we need to make sure the ID field is String
-                fields.append(QgsField(self.traj_id_field, QVariant.String))
-            else:
-                fields.append(field)
-        for field in fields_to_add:
-            i = fields.indexFromName(field.name())
-            if i < 0:
-                fields.append(field)
-        return fields
 
     def get_traj_fields(self):
         length_units = f"{self.speed_units[0]}"
