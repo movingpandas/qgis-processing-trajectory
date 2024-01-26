@@ -139,7 +139,7 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
             QgsProcessingParameterNumber(
                 name=self.MAX_DIAMETER,
                 description=self.tr("Max stop diameter (meters)"),
-                defaultValue=15,
+                defaultValue=30,
                 optional=False,
             )
         )
@@ -149,7 +149,7 @@ class StopSplitterAlgorithm(SplitTrajectoriesAlgorithm):
                 description=self.tr(
                     "Min stop duration (timedelta, e.g. 1 hours, 15 minutes)"
                 ),
-                defaultValue="15 minutes",
+                defaultValue="2 minutes",
                 optional=False,
             )
         )

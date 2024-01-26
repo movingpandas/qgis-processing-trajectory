@@ -18,7 +18,7 @@ from .overlayAlgorithm import (
     ClipTrajectoriesByExtentAlgorithm,
     ClipTrajectoriesByPolygonLayer,
 )
-from .extractPtsAlgorithm import ExtractODPtsAlgorithm
+from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -59,6 +59,7 @@ class TrajectoolsProvider(QgsProcessingProvider):
             ClipTrajectoriesByExtentAlgorithm(),
             ClipTrajectoriesByPolygonLayer(),
             ExtractODPtsAlgorithm(),
+            ExtractStopsAlgorithm(),
         ]
         return algs
 
