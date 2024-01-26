@@ -1,16 +1,16 @@
 import sys
 import pandas as pd
 from pyproj import CRS
-
-sys.path.append("..")
-
 from movingpandas import TrajectoryCollection
 from qgis.core import (
     QgsFeature,
     QgsGeometry,
     QgsPointXY,
     QgsFeatureSink,
+    QgsMessageLog, 
+    Qgis
 )
+from qgis.PyQt.QtCore import QDateTime
 
 
 def trajectories_from_qgis_point_layer(
@@ -26,6 +26,9 @@ def tc_from_pt_layer(layer, time_field_name, trajectory_id_field):
     for feature in layer.getFeatures():
         my_dict = {}
         for i, a in enumerate(feature.attributes()):
+            # QgsMessageLog.logMessage(str(type(a)), "Trajectools", level=Qgis.Info )
+            if names[i] == time_field_name and type(a) == "QDateTime":
+                a = a.toPyDateTime()
             my_dict[names[i]] = a
         pt = feature.geometry().asPoint()
         my_dict["geom_x"] = pt.x()
@@ -47,5 +50,6 @@ def tc_from_pt_layer(layer, time_field_name, trajectory_id_field):
 def feature_from_gdf_row(row):
     f = QgsFeature()
     f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(row.geometry.x, row.geometry.y)))
-    f.setAttributes(row.values.tolist()[:-1])
+    values = row.values.tolist()[:-1]
+    f.setAttributes(values)
     return f
