@@ -96,7 +96,7 @@ class ExtractODPtsAlgorithm(TrajectoriesAlgorithm):
         except ValueError:  # when the tc is empty
             return
         gdf = gdf.convert_dtypes()
-        gdf[self.timestamp_field] = gdf["t"].astype(str)
+        gdf[self.timestamp_field] = gdf[self.timestamp_field].astype(str)
         names = [field.name() for field in self.fields_pts]
         names.append("geometry")
         gdf = gdf[names]
@@ -108,7 +108,7 @@ class ExtractODPtsAlgorithm(TrajectoriesAlgorithm):
 
         gdf = tc.get_end_locations()
         gdf = gdf.convert_dtypes()
-        gdf[self.timestamp_field] = gdf["t"].astype(str)
+        gdf[self.timestamp_field] = gdf[self.timestamp_field].astype(str)
         gdf = gdf[names]
 
         for _, row in gdf.iterrows():
