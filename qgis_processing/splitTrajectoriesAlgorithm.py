@@ -19,10 +19,10 @@ class SplitTrajectoriesAlgorithm(TrajectoryManipulationAlgorithm):
         super().__init__()
 
     def group(self):
-        return self.tr("Split trajectories")
+        return self.tr("Trajectory splitting")
 
     def groupId(self):
-        return "split_trajectories"
+        return "TrajectorySplitting"
 
 
 class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):

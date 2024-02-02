@@ -52,10 +52,10 @@ class ExtractODPtsAlgorithm(TrajectoriesAlgorithm):
         )
 
     def group(self):
-        return self.tr("Basic")
+        return self.tr("Event extraction")
 
     def groupId(self):
-        return "TrajectoryBasic"
+        return "TrajectoryEventExtraction"
 
     def name(self):
         return "extract_od_pts"
@@ -159,10 +159,10 @@ class ExtractStopsAlgorithm(TrajectoriesAlgorithm):
         )
 
     def group(self):
-        return self.tr("Basic")
+        return self.tr("Event extraction")
 
     def groupId(self):
-        return "TrajectoryBasic"
+        return "TrajectoryEventExtraction"
 
     def name(self):
         return "extract_stop_pts"
