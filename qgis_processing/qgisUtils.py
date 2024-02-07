@@ -26,9 +26,12 @@ def tc_from_pt_layer(layer, time_field_name, trajectory_id_field):
     for feature in layer.getFeatures():
         my_dict = {}
         for i, a in enumerate(feature.attributes()):
-            # QgsMessageLog.logMessage(str(type(a)), "Trajectools", level=Qgis.Info )
-            if names[i] == time_field_name and type(a) == "QDateTime":
-                a = a.toPyDateTime()
+            #QgsMessageLog.logMessage(f"{names[i]} | {time_field_name}", "Trajectools", level=Qgis.Info )
+            if names[i] == time_field_name:  # and type(a) == "QDateTime":
+                try:
+                    a = a.toPyDateTime()
+                except:
+                    pass 
             my_dict[names[i]] = a
         pt = feature.geometry().asPoint()
         my_dict["geom_x"] = pt.x()
