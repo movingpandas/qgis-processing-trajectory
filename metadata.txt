@@ -1,27 +1,31 @@
 [general]
 name=Trajectools
 description=Processing tools for handling trajectory data 
-about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on GeoPandas! Sample data for testing the functionality is provided with the plugin download. 
+about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on MovingPandas! See the plugin homepage for installation recommendations. Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
 version=2.0
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.0
 
 icon=icons/icon.png
-tags=trajectories, movement
+tags=trajectories, movement, mobility, transport, spatiotemporal, tracks
 
 author=Anita Graser
 email=anitagraser@gmx.at
 
-homepage=https://github.com/anitagraser/qgis-processing-trajectory
-tracker=https://github.com/anitagraser/qgis-processing-trajectory/issues
-repository=https://github.com/anitagraser/qgis-processing-trajectory
+homepage=https://github.com/movingpandas/qgis-processing-trajectory
+tracker=https://github.com/movingpandas/qgis-processing-trajectory/issues
+repository=https://github.com/movingpandas/qgis-processing-trajectory
 
-experimental=True
+experimental=False
 deprecated=False
 
 changelog=2.0
-    - Switch to MovingPandas backend
+    - Switched to MovingPandas backend
+    - Added Basic algorithm to create trajectories
+    - Added Event extraction algorithms to extract OD points or stop points
+    - Added Trajectory splitting algorithms to split at observation gaps, at stops, or at time intervals 
+    - Added Trajectory overlay algorithms to clip trajectories by extent or by polygon layer
     1.0.3
     - Fix #10 New GeoPandas CRS handling
     1.0.2
