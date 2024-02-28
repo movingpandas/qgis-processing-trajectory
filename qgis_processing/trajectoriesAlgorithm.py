@@ -110,6 +110,12 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         tc = tc_from_pt_layer(
             self.input_layer, self.timestamp_field, self.traj_id_field
         )
+
+        if len(tc.trajectories) < 1:
+            raise ValueError(
+                "The resulting trajectory collection is empty. Check that the trajectory ID and timestamp fields have been configured correctly."
+            )
+
         tc.add_speed(units=tuple(self.speed_units), overwrite=True)
         tc.add_direction(overwrite=True)
         return tc, crs
