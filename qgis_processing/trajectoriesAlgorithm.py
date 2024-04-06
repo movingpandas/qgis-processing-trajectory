@@ -21,7 +21,7 @@ from qgis.core import (
 
 sys.path.append("..")
 
-from .qgisUtils import tc_from_pt_layer, feature_from_gdf_row
+from .qgisUtils import tc_from_pt_layer, feature_from_gdf_row, df_from_pt_layer
 
 pluginPath = os.path.dirname(__file__)
 
@@ -94,7 +94,16 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
-    def create_tc(self, parameters, context):
+    def create_df(self, parameters, context):
+        self.prepare_parameters(parameters, context)
+
+        df = df_from_pt_layer(
+            self.input_layer, self.timestamp_field, self.traj_id_field
+        )
+
+        return df
+
+    def prepare_parameters(self, parameters, context):
         self.input_layer = self.parameterAsSource(parameters, self.INPUT, context)
         self.traj_id_field = self.parameterAsFields(
             parameters, self.TRAJ_ID_FIELD, context
@@ -105,6 +114,9 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         self.speed_units = self.parameterAsString(
             parameters, self.SPEED_UNIT, context
         ).split("/")
+
+    def create_tc(self, parameters, context):
+        self.prepare_parameters(parameters, context)
         crs = self.input_layer.sourceCrs()
 
         tc = tc_from_pt_layer(
@@ -201,7 +213,7 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
         traj_layer.loadNamedStyle(os.path.join(pluginPath, "styles", "traj.qml"))
         return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
 
-    def get_traj_fields(self):
+    def get_traj_fields(self, fields_to_add=[]):
         length_units = f"{self.speed_units[0]}"
         speed_units = f"{self.speed_units[0]}{self.speed_units[1]}"
         fields = QgsFields()
@@ -211,9 +223,13 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
         fields.append(QgsField("duration_seconds", QVariant.Double))
         fields.append(QgsField(f"length_{length_units}", QVariant.Double))
         fields.append(QgsField(f"speed_{speed_units}", QVariant.Double))
+        for field in fields_to_add:
+            i = fields.indexFromName(field.name())
+            if i < 0:
+                fields.append(field)
         return fields
 
-    def traj_to_sink(self, traj):
+    def traj_to_sink(self, traj, attr_mean_to_add=[]):
         line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
         f = QgsFeature()
         f.setGeometry(line)
@@ -222,7 +238,10 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
         duration = float(traj.get_duration().total_seconds())
         length = traj.get_length(units=self.speed_units[0])
         speed = length / (duration / TIME_FACTOR[self.speed_units[1]])
-        f.setAttributes([traj.id, start_time, end_time, duration, length, speed])
+        attrs = [traj.id, start_time, end_time, duration, length, speed]
+        for a in attr_mean_to_add:
+            attrs.append(float(traj.df[a].mean()))
+        f.setAttributes(attrs)
         self.sink_trajs.addFeature(f, QgsFeatureSink.FastInsert)
 
     def tc_to_sink(self, tc):
