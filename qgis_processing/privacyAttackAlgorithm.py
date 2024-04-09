@@ -13,8 +13,8 @@ try:
 except ImportError as error:
     raise ImportError(
         "Missing optional dependencies. To use the privacy attacks please "
-        "install scikit-mobility "
-        "(see https://github.com/scikit-mobility/scikit-mobility)."
+        "install scikit-mobility. For details see: "
+        "see https://github.com/scikit-mobility/scikit-mobility."
     ) from error
 
 sys.path.append("..")
@@ -51,7 +51,8 @@ class HomeWorkAttack(TrajectoryManipulationAlgorithm):
             "by an individual, and matches them against frequency "
             "vectors. A frequency vector is an aggregation on trajectory "
             "data showing the unique locations visited by an individual "
-            "and the frequency with which he visited those locations. "
+            "and the frequency with which he visited those locations.</p> "
+            "<p>Caution: Make sure that the input layer CRS is EPSG:4326.</p>"
         )
 
     def helpUrl(self):
