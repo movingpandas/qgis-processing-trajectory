@@ -20,6 +20,7 @@ from .overlayAlgorithm import (
 )
 from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
 from .privacyAttackAlgorithm import HomeWorkAttack
+from .gtfsAlgorithm import GtfsAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -62,6 +63,7 @@ class TrajectoolsProvider(QgsProcessingProvider):
             ExtractODPtsAlgorithm(),
             ExtractStopsAlgorithm(),
             HomeWorkAttack(),
+            GtfsAlgorithm(),
         ]
         return algs
 

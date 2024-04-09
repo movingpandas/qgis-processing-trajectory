@@ -12,6 +12,7 @@ from qgis.core import (
     QgsProcessingUtils,
     QgsWkbTypes,
     QgsProcessingParameterString,
+    QgsProcessingParameterNumber,
     QgsField,
     QgsFields,
     QgsFeature,
@@ -39,6 +40,7 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
     TRAJ_ID_FIELD = "TRAJ_ID_FIELD"
     TIMESTAMP_FIELD = "TIME_FIELD"
     SPEED_UNIT = "SPEED_UNIT"
+    MIN_LENGTH = "MIN_LENGTH"
 
     def __init__(self):
         super().__init__()
@@ -93,6 +95,15 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
                 optional=False,
             )
         )
+        self.addParameter(
+            QgsProcessingParameterNumber(
+                name=self.MIN_LENGTH,
+                description=self.tr("Minimum trajectory length"),
+                defaultValue=0,
+                #optional=True,
+                minValue=0
+            )
+        )
 
     def create_df(self, parameters, context):
         self.prepare_parameters(parameters, context)
@@ -114,13 +125,16 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         self.speed_units = self.parameterAsString(
             parameters, self.SPEED_UNIT, context
         ).split("/")
+        self.min_length = self.parameterAsDouble(
+            parameters, self.MIN_LENGTH, context
+        )
 
     def create_tc(self, parameters, context):
         self.prepare_parameters(parameters, context)
         crs = self.input_layer.sourceCrs()
 
         tc = tc_from_pt_layer(
-            self.input_layer, self.timestamp_field, self.traj_id_field
+            self.input_layer, self.timestamp_field, self.traj_id_field, self.min_length
         )
 
         if len(tc.trajectories) < 1:
