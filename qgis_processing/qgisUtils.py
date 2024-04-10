@@ -41,13 +41,13 @@ def df_from_pt_layer(layer, time_field_name, trajectory_id_field):
     return df
 
 
-def tc_from_pt_layer(layer, time_field_name, trajectory_id_field):
+def tc_from_pt_layer(layer, time_field_name, trajectory_id_field, min_length=0):
     df = df_from_pt_layer(layer, time_field_name, trajectory_id_field)
     crs = CRS(int(layer.sourceCrs().geographicCrsAuthId().split(":")[1]))
-    return tc_from_df(df, time_field_name, trajectory_id_field, crs)
+    return tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length)
 
 
-def tc_from_df(df, time_field_name, trajectory_id_field, crs):
+def tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length):
     tc = TrajectoryCollection(
         df,
         traj_id_col=trajectory_id_field,
