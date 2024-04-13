@@ -113,10 +113,28 @@ class GtfsAlgorithm(QgsProcessingAlgorithm):
             line = QgsGeometry.fromWkt(segment.geometry.wkt)
             f = QgsFeature()
             f.setGeometry(line)
-            attrs = [segment.shape_id, segment.route_id, segment.route_name, segment.direction_id, segment.stop_sequence, segment.segment_name,
-                     segment.start_stop_name, segment.end_stop_name, segment.segment_id, segment.start_stop_id, segment.end_stop_id, segment.distance_m]
+            attrs = [
+                segment.shape_id,
+                segment.route_id,
+                segment.route_name,
+                segment.direction_id,
+                segment.stop_sequence,
+                segment.segment_name,
+                segment.start_stop_name,
+                segment.end_stop_name,
+                segment.segment_id,
+                segment.start_stop_id,
+                segment.end_stop_id,
+                segment.distance_m,
+            ]
             if add_avg_speed:
-                attrs = attrs + [segment.window, segment.speed_kmh, segment.avg_route_speed_kmh, segment.segment_max_speed_kmh, segment.runtime_sec]
+                attrs = attrs + [
+                    segment.window,
+                    segment.speed_kmh,
+                    segment.avg_route_speed_kmh,
+                    segment.segment_max_speed_kmh,
+                    segment.runtime_sec,
+                ]
             f.setAttributes(attrs)
             self.sink_segments.addFeature(f, QgsFeatureSink.FastInsert)
 
@@ -125,7 +143,7 @@ class GtfsAlgorithm(QgsProcessingAlgorithm):
     def get_segments(self, feed, add_avg_speed=False):
         if add_avg_speed:
             segments = feed.avg_speeds
-        else: 
+        else:
             segments = feed.segments
         return segments
 
@@ -150,5 +168,3 @@ class GtfsAlgorithm(QgsProcessingAlgorithm):
             fields.append(QgsField("segment_max_speed_kmh", QVariant.Double))
             fields.append(QgsField("runtime_sec", QVariant.Double))
         return fields
-
-

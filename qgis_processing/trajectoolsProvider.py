@@ -62,9 +62,15 @@ class TrajectoolsProvider(QgsProcessingProvider):
             ClipTrajectoriesByPolygonLayer(),
             ExtractODPtsAlgorithm(),
             ExtractStopsAlgorithm(),
-            HomeWorkAttack(),
-            GtfsAlgorithm(),
         ]
+        try:  # skmob-based algs
+            algs.append(HomeWorkAttack())
+        except ImportError:
+            pass
+        try:  # gtfs_functions-based algs
+            algs.append(GtfsAlgorithm())
+        except ImportError:
+            pass
         return algs
 
     def loadAlgorithms(self):

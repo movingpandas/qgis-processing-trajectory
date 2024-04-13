@@ -55,7 +55,7 @@ def tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length):
         y="geom_y",
         t=time_field_name,
         crs=crs,
-        min_length=min_length
+        min_length=min_length,
     )
     return tc
 

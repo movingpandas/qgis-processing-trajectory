@@ -100,8 +100,8 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
                 name=self.MIN_LENGTH,
                 description=self.tr("Minimum trajectory length"),
                 defaultValue=0,
-                #optional=True,
-                minValue=0
+                # optional=True,
+                minValue=0,
             )
         )
 
@@ -125,9 +125,7 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         self.speed_units = self.parameterAsString(
             parameters, self.SPEED_UNIT, context
         ).split("/")
-        self.min_length = self.parameterAsDouble(
-            parameters, self.MIN_LENGTH, context
-        )
+        self.min_length = self.parameterAsDouble(parameters, self.MIN_LENGTH, context)
 
     def create_tc(self, parameters, context):
         self.prepare_parameters(parameters, context)
