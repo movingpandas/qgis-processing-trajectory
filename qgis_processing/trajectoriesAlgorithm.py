@@ -186,6 +186,26 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         tc, crs = self.create_tc(parameters, context)
 
+        self.setup_pt_sink(parameters, context, tc, crs)
+
+        self.setup_traj_sink(parameters, context, crs)
+
+        self.processTc(tc, parameters, context)
+
+        return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
+
+    def setup_traj_sink(self, parameters, context, crs):
+        self.fields_trajs = self.get_traj_fields()
+        (self.sink_trajs, self.dest_trajs) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT_TRAJS,
+            context,
+            self.fields_trajs,
+            QgsWkbTypes.LineStringM,
+            crs,
+        )
+
+    def setup_pt_sink(self, parameters, context, tc, crs):
         self.fields_pts = self.get_pt_fields(
             [
                 QgsField(tc.get_speed_col(), QVariant.Double),
@@ -200,20 +220,6 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
             QgsWkbTypes.Point,
             crs,
         )
-
-        self.fields_trajs = self.get_traj_fields()
-        (self.sink_trajs, self.dest_trajs) = self.parameterAsSink(
-            parameters,
-            self.OUTPUT_TRAJS,
-            context,
-            self.fields_trajs,
-            QgsWkbTypes.LineStringM,
-            crs,
-        )
-
-        self.processTc(tc, parameters, context)
-
-        return {self.OUTPUT_PTS: self.dest_pts, self.OUTPUT_TRAJS: self.dest_trajs}
 
     def processTc(self, tc, parameters, context):
         pass  # needs to be implemented by each splitter
@@ -241,7 +247,7 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
                 fields.append(field)
         return fields
 
-    def traj_to_sink(self, traj, attr_mean_to_add=[]):
+    def traj_to_sink(self, traj, attr_mean_to_add=[], attr_first_to_add=[]):
         line = QgsGeometry.fromWkt(traj.to_linestringm_wkt())
         f = QgsFeature()
         f.setGeometry(line)
@@ -253,16 +259,30 @@ class TrajectoryManipulationAlgorithm(TrajectoriesAlgorithm):
         attrs = [traj.id, start_time, end_time, duration, length, speed]
         for a in attr_mean_to_add:
             attrs.append(float(traj.df[a].mean()))
+        for a in attr_first_to_add:
+            try:
+                attrs.append(float(traj.df[a].iloc[0]))
+                continue
+            except:
+                pass
+            try: 
+                attrs.append(int(traj.df[a].iloc[0]))
+                continue
+            except:
+                pass
+            attrs.append(traj.df[a].iloc[0])
         f.setAttributes(attrs)
         self.sink_trajs.addFeature(f, QgsFeatureSink.FastInsert)
 
-    def tc_to_sink(self, tc):
+    def tc_to_sink(self, tc, field_names_to_add=[]):
         try:
             gdf = tc.to_point_gdf()
         except ValueError:  # when the tc is empty
             return
         gdf[self.timestamp_field] = gdf.index.astype(str)
         names = [field.name() for field in self.fields_pts]
+        for field_name in field_names_to_add:
+            names.append(field_name)      
         names.append("geometry")
         gdf = gdf[names]
 

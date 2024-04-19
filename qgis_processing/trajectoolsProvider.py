@@ -16,7 +16,8 @@ from .splitTrajectoriesAlgorithm import (
 )
 from .overlayAlgorithm import (
     ClipTrajectoriesByExtentAlgorithm,
-    ClipTrajectoriesByPolygonLayer,
+    ClipTrajectoriesByPolygonLayerAlgorithm,
+    IntersectWithPolygonLayerAlgorithm,
 )
 from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
 from .privacyAttackAlgorithm import HomeWorkAttack
@@ -59,7 +60,8 @@ class TrajectoolsProvider(QgsProcessingProvider):
             TemporalSplitterAlgorithm(),
             StopSplitterAlgorithm(),
             ClipTrajectoriesByExtentAlgorithm(),
-            ClipTrajectoriesByPolygonLayer(),
+            ClipTrajectoriesByPolygonLayerAlgorithm(),
+            IntersectWithPolygonLayerAlgorithm(),
             ExtractODPtsAlgorithm(),
             ExtractStopsAlgorithm(),
         ]
