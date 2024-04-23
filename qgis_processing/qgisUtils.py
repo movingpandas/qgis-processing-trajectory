@@ -47,7 +47,7 @@ def tc_from_pt_layer(layer, time_field_name, trajectory_id_field, min_length=0):
     return tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length)
 
 
-def tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length):
+def tc_from_df(df, time_field_name, trajectory_id_field, crs, min_length=0):
     tc = TrajectoryCollection(
         df,
         traj_id_col=trajectory_id_field,
