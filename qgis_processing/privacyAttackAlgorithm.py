@@ -79,7 +79,7 @@ class HomeWorkAttack(TrajectoryManipulationAlgorithm):
 
         crs = self.input_layer.sourceCrs()
         crs_no = CRS(int(crs.geographicCrsAuthId().split(":")[1]))
-        tc = tc_from_df(df, self.timestamp_field, self.traj_id_field, crs_no)
+        tc = tc_from_df(df, self.timestamp_field, self.traj_id_field, crs_no, self.min_length)
         tc.add_speed(units=tuple(self.speed_units), overwrite=True)
         tc.add_direction(overwrite=True)
 
