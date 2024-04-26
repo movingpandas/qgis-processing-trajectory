@@ -21,7 +21,7 @@ from .overlayAlgorithm import (
 )
 from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
 from .privacyAttackAlgorithm import HomeWorkAttack
-from .gtfsAlgorithm import GtfsAlgorithm
+from .gtfsAlgorithm import GtfsShapesAlgorithm, GtfsSegmentsAlgorithm
 
 pluginPath = os.path.dirname(__file__)
 
@@ -70,7 +70,8 @@ class TrajectoolsProvider(QgsProcessingProvider):
         except ImportError:
             pass
         try:  # gtfs_functions-based algs
-            algs.append(GtfsAlgorithm())
+            algs.append(GtfsShapesAlgorithm())
+            algs.append(GtfsSegmentsAlgorithm())
         except ImportError:
             pass
         return algs

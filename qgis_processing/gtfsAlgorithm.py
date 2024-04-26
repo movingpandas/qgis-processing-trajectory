@@ -37,7 +37,90 @@ from .qgisUtils import tc_from_pt_layer, feature_from_gdf_row, df_from_pt_layer
 pluginPath = os.path.dirname(__file__)
 
 
-class GtfsAlgorithm(QgsProcessingAlgorithm):
+
+class GtfsShapesAlgorithm(QgsProcessingAlgorithm):
+    INPUT = "INPUT"
+    SPEED_OPTION = "SPEED"
+    OUTPUT = "OUTPUT"
+
+    def __init__(self):
+        super().__init__()
+
+    def name(self):
+        return "gtfs_shapes"
+
+    def displayName(self):
+        return self.tr("Extract shapes")
+
+    def group(self):
+        return self.tr("GTFS")
+
+    def groupId(self):
+        return "Gtfs"
+
+    def tr(self, text):
+        return QCoreApplication.translate("trajectools", text)
+
+    def helpUrl(self):
+        return "https://github.com/Bondify/gtfs_functions"
+
+    def shortHelpString(self):
+        return self.tr(
+            "<p>Extracts shapes from a GTFS ZIP file using "
+            "gtfs_functions.Feed.shapes</p>"
+        )
+
+    def createInstance(self):
+        return type(self)()
+
+    def initAlgorithm(self, config=None):
+        self.addParameter(
+            QgsProcessingParameterFile(
+                name=self.INPUT,
+                description=self.tr("Input GTFS file"),
+            )
+        )
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                name=self.OUTPUT,
+                description=self.tr("GTFS shapes"),
+                type=QgsProcessing.TypeVectorLine,
+            )
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        gtfs_file = self.parameterAsFile(parameters, self.INPUT, context)
+        (self.sink_shapes, self.dest_shapes) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            self.get_fields(),
+            QgsWkbTypes.LineStringM,
+            QgsCoordinateReferenceSystem("EPSG:4326"),
+        )
+
+        feed = Feed(gtfs_file)
+        segments = feed.shapes
+        for _, shape in segments.iterrows():
+            line = QgsGeometry.fromWkt(shape.geometry.wkt)
+            f = QgsFeature()
+            f.setGeometry(line)
+            attrs = [
+                shape.shape_id
+            ]
+            f.setAttributes(attrs)
+            self.sink_shapes.addFeature(f, QgsFeatureSink.FastInsert)
+
+        return {self.OUTPUT: self.dest_shapes}
+
+    def get_fields(self):
+        fields = QgsFields()
+        fields.append(QgsField("shape_id", QVariant.String))
+        return fields
+
+
+
+class GtfsSegmentsAlgorithm(QgsProcessingAlgorithm):
     INPUT = "INPUT"
     SPEED_OPTION = "SPEED"
     OUTPUT = "OUTPUT"
