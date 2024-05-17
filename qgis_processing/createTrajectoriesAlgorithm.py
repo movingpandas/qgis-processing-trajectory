@@ -1,7 +1,5 @@
 import sys
 
-from qgis.PyQt.QtCore import QCoreApplication
-
 sys.path.append("..")
 
 from .trajectoriesAlgorithm import TrajectoryManipulationAlgorithm
