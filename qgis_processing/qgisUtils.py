@@ -1,7 +1,6 @@
 import sys
 import pandas as pd
 from pyproj import CRS
-from movingpandas import TrajectoryCollection
 from qgis.core import (
     QgsFeature,
     QgsGeometry,
@@ -11,6 +10,15 @@ from qgis.core import (
     Qgis,
 )
 from qgis.PyQt.QtCore import QDateTime
+
+try:
+    from movingpandas import TrajectoryCollection
+except ImportError as error:
+    raise ImportError(
+        "Missing dependency. To use the trajectory analysis algorithms "
+        "please install MovingPandas. For details see: "
+        "https://github.com/movingpandas/qgis-processing-trajectory."
+    ) from error
 
 
 def trajectories_from_qgis_point_layer(
