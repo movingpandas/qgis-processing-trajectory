@@ -21,7 +21,7 @@ experimental=False
 deprecated=False
 
 changelog=2.1
-    - Added Trajectory overlay algorith to intersect trajectories with polygon layer
+    - Added Trajectory overlay algorithm to intersect trajectories with polygon layer
     - Fixed issue with previously ignored minimum trajectory length settings
     - Added Privacy algorithm for home work attack (requires scikit-mobility)
     - Added GTFS algorithms for extracting shapes and segments (requires gtfs_functions)
