@@ -2,7 +2,8 @@
 
 The Trajectools plugin adds trajectory analysis algorithms to the QGIS Processing toolbox. 
 
-![trajectools](https://github.com/movingpandas/qgis-processing-trajectory/assets/590385/000abc94-fda0-4b09-8230-47fd9ef49e7b)
+
+![trajectools](https://github.com/movingpandas/qgis-processing-trajectory/assets/590385/218acb03-41be-4ea0-aee4-b773911d58f9)
 
 
 ## Requirements
