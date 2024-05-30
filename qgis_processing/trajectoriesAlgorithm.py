@@ -46,7 +46,7 @@ class TrajectoriesAlgorithm(QgsProcessingAlgorithm):
         super().__init__()
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, "icons", "icon.png"))
+        return QIcon(os.path.join(pluginPath, "icons", "mpd.png"))
 
     def tr(self, text):
         return QCoreApplication.translate("trajectools", text)
