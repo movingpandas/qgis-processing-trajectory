@@ -20,8 +20,17 @@ from .overlayAlgorithm import (
     IntersectWithPolygonLayerAlgorithm,
 )
 from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
-from .privacyAttackAlgorithm import HomeWorkAttack
-from .gtfsAlgorithm import GtfsShapesAlgorithm, GtfsSegmentsAlgorithm
+
+try:  # skmob-based algs
+    from .privacyAttackAlgorithm import HomeWorkAttack
+except ImportError:
+    pass
+
+try:  # gtfs_functions-based algs
+    from .gtfsAlgorithm import GtfsShapesAlgorithm, GtfsSegmentsAlgorithm
+except ImportError:
+    pass
+
 
 pluginPath = os.path.dirname(__file__)
 
@@ -67,12 +76,12 @@ class TrajectoolsProvider(QgsProcessingProvider):
         ]
         try:  # skmob-based algs
             algs.append(HomeWorkAttack())
-        except ImportError:
+        except NameError:
             pass
         try:  # gtfs_functions-based algs
             algs.append(GtfsShapesAlgorithm())
             algs.append(GtfsSegmentsAlgorithm())
-        except ImportError:
+        except NameError:
             pass
         return algs
 
