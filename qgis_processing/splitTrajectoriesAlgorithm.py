@@ -55,7 +55,7 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
             "(for supported time gap formats see: "
             "https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_timedelta.html)</p>"
             "<p>For more information on trajectory splitters see: "
-            "https://movingpandas.readthedocs.io/en/main/trajectorysplitter.html</p>"
+            "https://movingpandas.readthedocs.io/en/main/api/trajectorysplitter.html</p>"
             "<p><b>Speed</b> is calculated based on the input layer CRS information and "
             "converted to the desired speed units. For more info on the supported units, "
             "see https://movingpandas.org/units</p>"
