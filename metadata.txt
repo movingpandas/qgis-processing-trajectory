@@ -3,7 +3,7 @@ name=Trajectools
 description=Processing tools for handling trajectory data 
 about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on MovingPandas! See the plugin homepage for installation recommendations. Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
-version=2.1
+version=2.2
 qgisMinimumVersion=3.0
 qgisMaximumVersion=4.0
 
@@ -20,7 +20,11 @@ repository=https://github.com/movingpandas/qgis-processing-trajectory
 experimental=False
 deprecated=False
 
-changelog=2.1
+changelog=2.2
+    - Added new logo
+    - Maded skmob and gtfs_functions optional dependencies, fixes #30
+    - Updated API docs link, fixes #32
+    2.1
     - Added Trajectory overlay algorithm to intersect trajectories with polygon layer
     - Fixed issue with previously ignored minimum trajectory length settings
     - Added Privacy algorithm for home work attack (requires scikit-mobility)
