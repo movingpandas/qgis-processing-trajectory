@@ -42,9 +42,10 @@ The Trajectools plugin can be installed directly in QGIS using the built-in Plug
 
 **Figure 1: QGIS Plugin Manager with Trajectools plugin installed.**
 
-![image](https://github.com/movingpandas/qgis-processing-trajectory/assets/590385/ac6ad64d-1eb4-4190-86ea-522c00188f3b)
+![image](https://github.com/user-attachments/assets/194ec6ed-2379-4572-b58b-a252d973f064)
 
-**Figure 2: Trajectools (v2.1) algorithms in the QGIS Processing toolbox**
+
+**Figure 2: Trajectools (v2.3) algorithms in the QGIS Processing toolbox**
 
 ## Examples
 
