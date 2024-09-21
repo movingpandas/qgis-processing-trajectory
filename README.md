@@ -54,3 +54,21 @@ The individual Trajectools algorithms are flexible and modular and can therefore
 ![image](https://github.com/movingpandas/qgis-processing-trajectory/assets/590385/3040ce90-552e-43a5-8660-17628f9b813a)
 
 ![Trajectools clipping screenshot](screenshots/trajectools2.PNG)
+
+## Citation information
+
+Please cite [0]  when using Trajectools in your research and reference the appropriate release version.
+
+[0] [Graser, A., & Dragaschnig, M. (2024, June). Trajectools Demo: Towards No-Code Solutions for Movement Data Analytics. In 2024 25th IEEE International Conference on Mobile Data Management (MDM) (pp. 235-238). IEEE.](https://ieeexplore.ieee.org/abstract/document/10591660)
+
+```
+@inproceedings{graser2024trajectools,
+  title = {Trajectools Demo: Towards No-Code Solutions for Movement Data Analytics},
+  author = {Graser, Anita and Dragaschnig, Melitta},
+  booktitle = {2024 25th IEEE International Conference on Mobile Data Management (MDM)},
+  pages = {235--238},
+  year = {2024},
+  organization = {IEEE},
+  doi = {10.1109/MDM61037.2024.00048},
+}
+```
