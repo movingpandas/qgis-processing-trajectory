@@ -19,7 +19,19 @@ from .overlayAlgorithm import (
     ClipTrajectoriesByPolygonLayerAlgorithm,
     IntersectWithPolygonLayerAlgorithm,
 )
-from .extractPtsAlgorithm import ExtractODPtsAlgorithm, ExtractStopsAlgorithm
+from .extractPtsAlgorithm import (
+    ExtractODPtsAlgorithm, 
+    ExtractStopsAlgorithm,
+)
+from .generalizationAlgorithm import (
+    DouglasPeuckerGeneralizerAlgorithm,
+    MinDistanceGeneralizerAlgorithm,
+    MinTimeDeltaGeneralizerAlgorithm,
+    TopDownTimeRatioGeneralizerAlgorithm,
+)
+from .cleaningAlgorithm import (
+    OutlierCleanerAlgorithm,
+)
 
 try:  # skmob-based algs
     from .privacyAttackAlgorithm import HomeWorkAttack
@@ -28,6 +40,11 @@ except ImportError:
 
 try:  # gtfs_functions-based algs
     from .gtfsAlgorithm import GtfsShapesAlgorithm, GtfsSegmentsAlgorithm
+except ImportError:
+    pass
+
+try:  # stonesoup-based algs
+    from .smoothingAlgorithm import KalmanSmootherAlgorithm
 except ImportError:
     pass
 
@@ -73,6 +90,11 @@ class TrajectoolsProvider(QgsProcessingProvider):
             IntersectWithPolygonLayerAlgorithm(),
             ExtractODPtsAlgorithm(),
             ExtractStopsAlgorithm(),
+            DouglasPeuckerGeneralizerAlgorithm(),
+            MinDistanceGeneralizerAlgorithm(),
+            MinTimeDeltaGeneralizerAlgorithm(),
+            TopDownTimeRatioGeneralizerAlgorithm(),
+            OutlierCleanerAlgorithm(),
         ]
         try:  # skmob-based algs
             algs.append(HomeWorkAttack())
@@ -81,6 +103,10 @@ class TrajectoolsProvider(QgsProcessingProvider):
         try:  # gtfs_functions-based algs
             algs.append(GtfsShapesAlgorithm())
             algs.append(GtfsSegmentsAlgorithm())
+        except NameError:
+            pass
+        try:  # stonesoup-based algs
+            algs.append(KalmanSmootherAlgorithm())
         except NameError:
             pass
         return algs
