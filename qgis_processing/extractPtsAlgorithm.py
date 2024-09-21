@@ -138,6 +138,7 @@ class ExtractStopsAlgorithm(TrajectoriesAlgorithm):
                 description=self.tr("Max stop diameter (meters)"),
                 defaultValue=30,
                 optional=False,
+                type=QgsProcessingParameterNumber.Double,
             )
         )
         self.addParameter(
