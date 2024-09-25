@@ -8,7 +8,7 @@ The Trajectools plugin adds trajectory analysis algorithms to the QGIS Processin
 
 ## Requirements
 
-Trajectools requires [MovingPandas](https://github.com/movingpandas/movingpandas) (a Python library for movement data analysis) and optionally integrates [scikit-mobility](https://scikit-mobility.github.io/scikit-mobility/) and [gtfs_functions](https://github.com/Bondify/gtfs_functions). 
+Trajectools requires [MovingPandas](https://github.com/movingpandas/movingpandas) (a Python library for movement data analysis) and optionally integrates [scikit-mobility](https://scikit-mobility.github.io/scikit-mobility/) (for privacy tests), [stonesoup](https://stonesoup.readthedocs.io/) (for smoothing), and [gtfs_functions](https://github.com/Bondify/gtfs_functions) (for GTFS data support). 
 
 ### Conda install
 
@@ -17,7 +17,7 @@ The recommended way to install these dependencies is through conda/mamba:
 ```
 (base) conda create -n qgis -c conda-forge python=3.9 
 (base) conda activate qgis
-(qgis) mamba install -c conda-forge qgis movingpandas scikit-mobility
+(qgis) mamba install -c conda-forge qgis movingpandas scikit-mobility stonesoup
 (qgis) pip install gtfs_functions
 ```
 
@@ -31,6 +31,7 @@ If you cannot use conda, you may try installing from the QGIS Python Console:
 import pip
 pip.main(['install', 'movingpandas'])
 pip.main(['install', 'scikit-mobility'])
+pip.main(['install', 'stonesoup'])
 pip.main(['install', 'gtfs_functions'])
 ```
 
