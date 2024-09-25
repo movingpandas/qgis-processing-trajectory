@@ -56,6 +56,9 @@ The individual Trajectools algorithms are flexible and modular and can therefore
 
 ![Trajectools clipping screenshot](screenshots/trajectools2.PNG)
 
+![image](https://github.com/user-attachments/assets/e3bbf2e5-e551-4f3e-bd29-8d19bdc33137)
+
+
 ## Citation information
 
 Please cite [0]  when using Trajectools in your research and reference the appropriate release version.
