@@ -61,7 +61,7 @@ The individual Trajectools algorithms are flexible and modular and can therefore
 
 ## Citation information
 
-![Zenodo badge](https://zenodo.org/badge/DOI/10.5281/zenodo.13847643.svg)
+[![Zenodo badge](https://zenodo.org/badge/DOI/10.5281/zenodo.13847643.svg)](https://doi.org/10.5281/zenodo.13847643)
 
 Please cite [0] when using Trajectools in your research and reference the appropriate release version using the Zenodo DOI.
 
