@@ -37,6 +37,89 @@ from .qgisUtils import tc_from_pt_layer, feature_from_gdf_row, df_from_pt_layer
 pluginPath = os.path.dirname(__file__)
 
 
+class GtfsStopsAlgorithm(QgsProcessingAlgorithm):
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"  
+
+    def __init__(self):
+        super().__init__()
+
+    def name(self):
+        return "gtfs_stops"
+
+    def displayName(self):
+        return self.tr("Extract stops")
+
+    def group(self):
+        return self.tr("GTFS")
+
+    def groupId(self):
+        return "Gtfs"
+
+    def tr(self, text):
+        return QCoreApplication.translate("trajectools", text)
+
+    def helpUrl(self):
+        return "https://github.com/Bondify/gtfs_functions"
+
+    def shortHelpString(self):
+        return self.tr(
+            "<p>Extracts stops from a GTFS ZIP file using "
+            "gtfs_functions.Feed.stops</p>"
+        )
+
+    def createInstance(self):
+        return type(self)()
+
+    def initAlgorithm(self, config=None):
+        self.addParameter(
+            QgsProcessingParameterFile(
+                name=self.INPUT,
+                description=self.tr("Input GTFS file"),
+            )
+        )
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                name=self.OUTPUT,
+                description=self.tr("GTFS stops"),
+                type=QgsProcessing.TypeVectorPoint,
+            )
+        )
+
+    def processAlgorithm(self, parameters, context, feedback):
+        gtfs_file = self.parameterAsFile(parameters, self.INPUT, context)
+        (self.sink_stops, self.dest_stops) = self.parameterAsSink(
+            parameters,
+            self.OUTPUT,
+            context,
+            self.get_fields(),
+            QgsWkbTypes.Point,
+            QgsCoordinateReferenceSystem("EPSG:4326"),
+        )
+
+        feed = Feed(gtfs_file)
+        stops = feed.stops
+        for _, stop in stops.iterrows():
+            pt = QgsGeometry.fromWkt(stop.geometry.wkt)
+            f = QgsFeature()
+            f.setGeometry(pt)
+            attrs = [
+                stop.stop_id,
+                stop.stop_code,
+                stop.stop_name
+            ]
+            f.setAttributes(attrs)
+            self.sink_stops.addFeature(f, QgsFeatureSink.FastInsert)
+
+        return {self.OUTPUT: self.dest_stops}
+
+    def get_fields(self):
+        fields = QgsFields()
+        fields.append(QgsField("stop_id", QVariant.String))
+        fields.append(QgsField("stop_code", QVariant.String))
+        fields.append(QgsField("stop_name", QVariant.String))
+        return fields
+
 
 class GtfsShapesAlgorithm(QgsProcessingAlgorithm):
     INPUT = "INPUT"
@@ -117,7 +200,6 @@ class GtfsShapesAlgorithm(QgsProcessingAlgorithm):
         fields = QgsFields()
         fields.append(QgsField("shape_id", QVariant.String))
         return fields
-
 
 
 class GtfsSegmentsAlgorithm(QgsProcessingAlgorithm):

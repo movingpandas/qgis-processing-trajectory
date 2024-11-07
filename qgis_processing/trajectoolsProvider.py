@@ -39,7 +39,11 @@ except ImportError:
     pass
 
 try:  # gtfs_functions-based algs
-    from .gtfsAlgorithm import GtfsShapesAlgorithm, GtfsSegmentsAlgorithm
+    from .gtfsAlgorithm import (
+        GtfsStopsAlgorithm,
+        GtfsShapesAlgorithm, 
+        GtfsSegmentsAlgorithm
+    )
 except ImportError:
     pass
 
@@ -101,6 +105,7 @@ class TrajectoolsProvider(QgsProcessingProvider):
         except NameError:
             pass
         try:  # gtfs_functions-based algs
+            algs.append(GtfsStopsAlgorithm())
             algs.append(GtfsShapesAlgorithm())
             algs.append(GtfsSegmentsAlgorithm())
         except NameError:
