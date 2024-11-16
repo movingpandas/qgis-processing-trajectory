@@ -131,6 +131,13 @@ class IntersectWithPolygonLayerAlgorithm(OverlayTrajectoriesAlgorithm):
                 optional=False,
             )
         )
+        
+        import movingpandas as mpd
+        mpd_version  = mpd.__version__
+        if mpd_version < '0.18.0':
+            raise EnvironmentError("The Intersect trajectories with polygon layer algorithm "
+                                   "requires MovingPandas >= 0.18 "
+                                   f"but only {mpd_version} is installed.")
 
     def name(self):
         return "intersect_traj_vector"
