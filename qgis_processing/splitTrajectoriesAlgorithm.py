@@ -27,6 +27,15 @@ class SplitTrajectoriesAlgorithm(TrajectoryManipulationAlgorithm):
 
 class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
     TIME_GAP = "TIME_GAP"
+    TIME_DELTA_UNITS = "TIME_DELTA_UNITS"
+    TIME_DELTA_UNITS_OPTIONS = [
+        "Weeks",
+        "Days",
+        "Hours",
+        "Minutes",
+        "Seconds",
+        "Milliseconds"
+    ]
 
     def __init__(self):
         super().__init__()
@@ -34,13 +43,20 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
     def initAlgorithm(self, config=None):
         super().initAlgorithm(config)
         self.addParameter(
-            QgsProcessingParameterString(
+            QgsProcessingParameterNumber(
                 name=self.TIME_GAP,
-                description=self.tr("Time gap (timedelta, e.g. 1 hours, 15 minutes)"),
-                defaultValue="1 hours",
-                optional=True,
+                description=self.tr("Time gap value"),
+                defaultValue=1,
             )
         )
+        self.addParameter(
+            QgsProcessingParameterEnum(
+                name=self.TIME_DELTA_UNITS,
+                description=self.tr("Time gap unit"),
+                defaultValue=3,
+                options=self.TIME_DELTA_UNITS_OPTIONS,
+            )
+        )        
 
     def name(self):
         return "split_gap"
@@ -51,9 +67,7 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
     def shortHelpString(self):
         return self.tr(
             "<p>Splits trajectories into subtrajectories "
-            "whenever there is a gap in the observations "
-            "(for supported time gap formats see: "
-            "https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_timedelta.html)</p>"
+            "whenever there is a gap in the observations</p>"
             "<p>For more information on trajectory splitters see: "
             "https://movingpandas.readthedocs.io/en/main/api/trajectorysplitter.html</p>"
             "<p><b>Speed</b> is calculated based on the input layer CRS information and "
@@ -64,8 +78,12 @@ class ObservationGapSplitterAlgorithm(SplitTrajectoriesAlgorithm):
         )
 
     def processTc(self, tc, parameters, context):
-        time_gap = self.parameterAsString(parameters, self.TIME_GAP, context)
-        time_gap = pd.Timedelta(time_gap).to_pytimedelta()
+        time_gap = self.parameterAsDouble(parameters, self.TIME_GAP, context)
+        td_units = self.parameterAsInt(parameters, self.TIME_DELTA_UNITS, context)
+        td_units = self.TIME_DELTA_UNITS_OPTIONS[td_units]
+        if td_units == "Weeks": 
+            td_units = "W"
+        time_gap = pd.Timedelta(f"{time_gap} {td_units}").to_pytimedelta()
         for traj in tc.trajectories:
             splits = ObservationGapSplitter(traj).split(gap=time_gap)
             self.tc_to_sink(splits)
