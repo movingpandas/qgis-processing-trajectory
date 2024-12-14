@@ -1,4 +1,4 @@
-# QGIS Processing Trajectools
+# QGIS Trajectools
 
 [![View Jupyter Notebook](https://img.shields.io/badge/QGIS-Plugin%20repo-green.svg)](https://plugins.qgis.org/plugins/processing_trajectory/)
 [![Zenodo badge](https://zenodo.org/badge/DOI/10.5281/zenodo.13847642.svg)](https://doi.org/10.5281/zenodo.13847642)
@@ -81,3 +81,7 @@ Please cite [0] when using Trajectools in your research and reference the approp
   doi = {10.1109/MDM61037.2024.00048},
 }
 ```
+
+## Acknowledgements
+
+This work was supported in part by the Horizon Framework Programme of the European Union under grant agreement No. 101093051 ([EMERALDS](https://www.emeralds-horizon.eu/)).
