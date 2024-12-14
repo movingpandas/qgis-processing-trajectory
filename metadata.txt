@@ -1,7 +1,7 @@
 [general]
 name=Trajectools
 description=Processing tools for handling trajectory data 
-about=Trajectools provides a collection of tools for handling trajectory data. This plugin depends on MovingPandas! See the plugin homepage for installation recommendations. Sample data for testing the functionality is provided with the plugin download. 
+about=Trajectools adds trajectory analysis algorithms to the QGIS Processing toolbox. Trajectools requires MovingPandas (a Python library for movement data analysis) and optionally integrates scikit-mobility (for privacy tests), stonesoup (for smoothing), and gtfs_functions (for GTFS data support). See the plugin homepage for installation recommendations. Sample data for testing the functionality is provided with the plugin download. 
 category=Plugins
 version=2.3
 qgisMinimumVersion=3.0
@@ -13,9 +13,9 @@ tags=trajectories, movement, mobility, transport, spatiotemporal, tracks, gtfs, 
 author=Anita Graser
 email=anitagraser@gmx.at
 
-homepage=https://github.com/movingpandas/qgis-processing-trajectory
-tracker=https://github.com/movingpandas/qgis-processing-trajectory/issues
-repository=https://github.com/movingpandas/qgis-processing-trajectory
+homepage=https://github.com/movingpandas/qgis-trajectools
+tracker=https://github.com/movingpandas/qgis-trajectools/issues
+repository=https://github.com/movingpandas/qgis-trajectools
 
 experimental=False
 deprecated=False
