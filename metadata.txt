@@ -8,7 +8,7 @@ qgisMinimumVersion=3.0
 qgisMaximumVersion=4.0
 
 icon=icons/icon.png
-tags=trajectories, movement, mobility, transport, spatiotemporal, tracks
+tags=trajectories, movement, mobility, transport, spatiotemporal, tracks, gtfs, public transport
 
 author=Anita Graser
 email=anitagraser@gmx.at
