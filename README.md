@@ -1,5 +1,8 @@
 # QGIS Processing Trajectools
 
+[![View Jupyter Notebook](https://img.shields.io/badge/QGIS-Plugin%20repo-green.svg)](https://plugins.qgis.org/plugins/processing_trajectory/)
+[![Zenodo badge](https://zenodo.org/badge/DOI/10.5281/zenodo.13847642.svg)](https://doi.org/10.5281/zenodo.13847642)
+
 The Trajectools plugin adds trajectory analysis algorithms to the QGIS Processing toolbox. 
 
 ![trajectools](https://github.com/movingpandas/qgis-processing-trajectory/assets/590385/218acb03-41be-4ea0-aee4-b773911d58f9)
@@ -61,9 +64,9 @@ The individual Trajectools algorithms are flexible and modular and can therefore
 
 ## Citation information
 
-[![Zenodo badge](https://zenodo.org/badge/DOI/10.5281/zenodo.13847643.svg)](https://doi.org/10.5281/zenodo.13847643)
 
-Please cite [0] when using Trajectools in your research and reference the appropriate release version using the Zenodo DOI.
+
+Please cite [0] when using Trajectools in your research and reference the appropriate release version using the Zenodo DOI: https://doi.org/10.5281/zenodo.13847642
 
 [0] [Graser, A., & Dragaschnig, M. (2024, June). Trajectools Demo: Towards No-Code Solutions for Movement Data Analytics. In 2024 25th IEEE International Conference on Mobile Data Management (MDM) (pp. 235-238). IEEE.](https://ieeexplore.ieee.org/abstract/document/10591660)
 
